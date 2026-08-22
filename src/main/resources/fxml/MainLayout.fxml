@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.waterborne.controller.MainLayoutController">
+    <!-- LEFT SIDEBAR -->
+    <left>
+        <VBox spacing="15.0" styleClass="sidebar" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="20.0" left="15.0" right="15.0" top="25.0" />
+            </padding>
+            <children>
+                <!-- APP BRANDING -->
+                <VBox spacing="4.0">
+                    <children>
+                        <Label styleClass="sidebar-title" text="WATERBORNE" />
+                        <Label styleClass="sidebar-title" text="RISK MAPPER" textFill="#0284c7" />
+                        <Label styleClass="sidebar-subtitle" text="College PBL Analytics Mini Project" />
+                    </children>
+                    <VBox.margin>
+                        <Insets bottom="20.0" />
+                    </VBox.margin>
+                </VBox>
+
+                <!-- NAVIGATION BUTTONS -->
+                <Button fx:id="btnDashboard" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDashboard" styleClass="nav-button" text="📊   Dashboard Overview" />
+                <Button fx:id="btnExplorer" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDistrictExplorer" styleClass="nav-button" text="🔍   District Explorer" />
+                <Button fx:id="btnRanking" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showRiskRanking" styleClass="nav-button" text="🏆   Risk Ranking" />
+                <Button fx:id="btnVisualization" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDataVisualization" styleClass="nav-button" text="📈   Data Visualization" />
+                <Button fx:id="btnDataTable" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDataTable" styleClass="nav-button" text="📋   District Data Table" />
+
+                <Region VBox.vgrow="ALWAYS" />
+
+                <!-- TEAM CREDITS FOOTER -->
+                <VBox spacing="2.0">
+                    <children>
+                        <Label text="PBL Mini Project — Team 3" styleClass="sidebar-subtitle" />
+                        <Label text="Student 3: Frontend &amp; Doc Lead" styleClass="sidebar-subtitle" />
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </left>
+
+    <!-- CENTER & TOP AREA -->
+    <center>
+        <VBox BorderPane.alignment="CENTER">
+            <children>
+                <!-- HEADER BAR -->
+                <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="header-bar">
+                    <children>
+                        <Label fx:id="viewTitleLabel" styleClass="view-title" text="Dashboard Overview" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="statusLabel" styleClass="system-status-online" text="🟢 System Active (Mock Data Layer)" />
+                        <Button mnemonicParsing="false" onAction="#handleRefreshData" styleClass="reset-button" text="🔄  Refresh" />
+                    </children>
+                </HBox>
+
+                <!-- DYNAMIC CONTENT REGION -->
+                <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </padding>
+                </StackPane>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

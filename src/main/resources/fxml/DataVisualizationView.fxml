@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.chart.ScatterChart?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.waterborne.controller.DataVisualizationController">
+    <content>
+        <VBox spacing="20.0">
+            <padding>
+                <Insets bottom="20.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            <children>
+                <!-- TOP ROW CHARTS -->
+                <HBox spacing="15.0">
+                    <children>
+                        <!-- DISTRICT RISK BAR CHART -->
+                        <VBox HBox.hgrow="ALWAYS" styleClass="content-panel" spacing="10.0">
+                            <children>
+                                <Label styleClass="panel-heading" text="District vs Risk Score (Bar Analytics)" />
+                                <BarChart fx:id="barChart" animated="false" legendVisible="false" prefHeight="300.0">
+                                    <xAxis>
+                                        <CategoryAxis label="District" />
+                                    </xAxis>
+                                    <yAxis>
+                                        <NumberAxis label="Risk Score (0-100)" upperBound="100.0" />
+                                    </yAxis>
+                                </BarChart>
+                            </children>
+                        </VBox>
+
+                        <!-- RISK CATEGORY PIE CHART -->
+                        <VBox prefWidth="420.0" styleClass="content-panel" spacing="10.0">
+                            <children>
+                                <Label styleClass="panel-heading" text="Risk Category Distribution" />
+                                <PieChart fx:id="pieChart" animated="false" prefHeight="300.0" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <!-- BOTTOM ROW CHARTS -->
+                <HBox spacing="15.0">
+                    <children>
+                        <!-- WATER SCARCITY VS RISK SCATTER CHART -->
+                        <VBox HBox.hgrow="ALWAYS" styleClass="content-panel" spacing="10.0">
+                            <children>
+                                <Label styleClass="panel-heading" text="Water Scarcity (%) vs Disease Risk Score" />
+                                <ScatterChart fx:id="scarcityScatterChart" animated="false" legendVisible="false" prefHeight="300.0">
+                                    <xAxis>
+                                        <NumberAxis label="Water Scarcity (%)" lowerBound="0.0" upperBound="100.0" autoRanging="false" tickUnit="20.0" />
+                                    </xAxis>
+                                    <yAxis>
+                                        <NumberAxis label="Risk Score (0-100)" lowerBound="0.0" upperBound="100.0" autoRanging="false" tickUnit="20.0" />
+                                    </yAxis>
+                                </ScatterChart>
+                            </children>
+                        </VBox>
+
+                        <!-- SANITATION VS RISK SCATTER CHART -->
+                        <VBox HBox.hgrow="ALWAYS" styleClass="content-panel" spacing="10.0">
+                            <children>
+                                <Label styleClass="panel-heading" text="Sanitation Coverage (%) vs Disease Risk Score" />
+                                <ScatterChart fx:id="sanitationScatterChart" animated="false" legendVisible="false" prefHeight="300.0">
+                                    <xAxis>
+                                        <NumberAxis label="Sanitation Coverage (%)" lowerBound="0.0" upperBound="100.0" autoRanging="false" tickUnit="20.0" />
+                                    </xAxis>
+                                    <yAxis>
+                                        <NumberAxis label="Risk Score (0-100)" lowerBound="0.0" upperBound="100.0" autoRanging="false" tickUnit="20.0" />
+                                    </yAxis>
+                                </ScatterChart>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </content>
+</ScrollPane>

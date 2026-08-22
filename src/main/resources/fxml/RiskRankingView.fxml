@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.waterborne.controller.RiskRankingController">
+    <children>
+        <!-- TOP PODIUM CARDS (RANK #1, #2, #3) -->
+        <HBox spacing="15.0">
+            <children>
+                <!-- RANK #1 CARD -->
+                <VBox HBox.hgrow="ALWAYS" styleClass="content-panel" spacing="8.0" style="-fx-border-color: #EF4444; -fx-border-width: 2px;">
+                    <children>
+                        <HBox alignment="CENTER_LEFT">
+                            <children>
+                                <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #DC2626;" text="🥇 RANK #1 (CRITICAL)" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Label fx:id="rank1BadgeLabel" styleClass="badge, badge-high" text="HIGH" />
+                            </children>
+                        </HBox>
+                        <Label fx:id="rank1NameLabel" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="—" />
+                        <Label fx:id="rank1ScoreLabel" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #DC2626;" text="Risk Score: — / 100" />
+                        <Label fx:id="rank1MetricsLabel" styleClass="metric-subtext" text="Water Scarcity: — | Sanitation: —" />
+                    </children>
+                </VBox>
+
+                <!-- RANK #2 CARD -->
+                <VBox HBox.hgrow="ALWAYS" styleClass="content-panel" spacing="8.0" style="-fx-border-color: #F59E0B; -fx-border-width: 1.5px;">
+                    <children>
+                        <HBox alignment="CENTER_LEFT">
+                            <children>
+                                <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #D97706;" text="🥈 RANK #2" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Label fx:id="rank2BadgeLabel" styleClass="badge, badge-moderate" text="MODERATE" />
+                            </children>
+                        </HBox>
+                        <Label fx:id="rank2NameLabel" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="—" />
+                        <Label fx:id="rank2ScoreLabel" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #D97706;" text="Risk Score: — / 100" />
+                        <Label fx:id="rank2MetricsLabel" styleClass="metric-subtext" text="Water Scarcity: — | Sanitation: —" />
+                    </children>
+                </VBox>
+
+                <!-- RANK #3 CARD -->
+                <VBox HBox.hgrow="ALWAYS" styleClass="content-panel" spacing="8.0" style="-fx-border-color: #CBD5E1; -fx-border-width: 1.5px;">
+                    <children>
+                        <HBox alignment="CENTER_LEFT">
+                            <children>
+                                <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #475569;" text="🥉 RANK #3" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Label fx:id="rank3BadgeLabel" styleClass="badge, badge-moderate" text="MODERATE" />
+                            </children>
+                        </HBox>
+                        <Label fx:id="rank3NameLabel" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="—" />
+                        <Label fx:id="rank3ScoreLabel" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #475569;" text="Risk Score: — / 100" />
+                        <Label fx:id="rank3MetricsLabel" styleClass="metric-subtext" text="Water Scarcity: — | Sanitation: —" />
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+
+        <!-- FULL RANKED LEADERBOARD TABLE -->
+        <VBox VBox.vgrow="ALWAYS" styleClass="content-panel" spacing="12.0">
+            <children>
+                <HBox alignment="CENTER_LEFT">
+                    <children>
+                        <Label styleClass="panel-heading" text="Full District Risk Score Leaderboard" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label styleClass="metric-subtext" text="Sorting Algorithm: QuickSort / MergeSort (Descending Score)" />
+                    </children>
+                </HBox>
+
+                <TableView fx:id="rankingTableView" VBox.vgrow="ALWAYS" prefHeight="400.0">
+                    <columns>
+                        <TableColumn fx:id="rankNumberColumn" prefWidth="80.0" text="Rank #" />
+                        <TableColumn fx:id="districtNameColumn" prefWidth="200.0" text="District Name" />
+                        <TableColumn fx:id="riskScoreColumn" prefWidth="130.0" text="Risk Score" />
+                        <TableColumn fx:id="riskLevelColumn" prefWidth="150.0" text="Risk Level" />
+                        <TableColumn fx:id="waterScarcityColumn" prefWidth="150.0" text="Water Scarcity" />
+                        <TableColumn fx:id="sanitationColumn" prefWidth="150.0" text="Sanitation Coverage" />
+                        <TableColumn fx:id="populationColumn" prefWidth="140.0" text="Population" />
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                    </columnResizePolicy>
+                </TableView>
+            </children>
+        </VBox>
+    </children>
+</VBox>

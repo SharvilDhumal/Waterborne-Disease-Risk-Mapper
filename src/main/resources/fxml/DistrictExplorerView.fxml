@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox spacing="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.waterborne.controller.DistrictExplorerController">
+    <children>
+        <!-- LEFT SIDE: DISTRICT LIST & SEARCH -->
+        <VBox prefWidth="320.0" spacing="12.0" styleClass="content-panel">
+            <children>
+                <Label styleClass="panel-heading" text="Select District" />
+                <TextField fx:id="searchField" promptText="🔍  Search district..." styleClass="search-field" />
+                <ListView fx:id="districtListView" VBox.vgrow="ALWAYS" />
+            </children>
+        </VBox>
+
+        <!-- RIGHT SIDE: DISTRICT PROFILE INSPECTOR -->
+        <VBox HBox.hgrow="ALWAYS" spacing="18.0" styleClass="content-panel">
+            <padding>
+                <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+            </padding>
+            <children>
+                <!-- HEADER CARD -->
+                <HBox alignment="CENTER_LEFT" spacing="15.0">
+                    <children>
+                        <VBox spacing="4.0">
+                            <children>
+                                <Label fx:id="districtNameLabel" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Select a District" />
+                                <Label fx:id="riskScoreLabel" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0284C7;" text="Score: — / 100" />
+                            </children>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="riskBadgeLabel" styleClass="badge, badge-low" text="—" />
+                    </children>
+                </HBox>
+
+                <!-- RISK FACTORS BREAKDOWN -->
+                <VBox spacing="14.0" style="-fx-background-color: #F8FAFC; -fx-padding: 18px; -fx-background-radius: 10px;">
+                    <children>
+                        <Label styleClass="metric-title" text="RISK CONTRIBUTING FACTORS" />
+
+                        <!-- WATER SCARCITY -->
+                        <VBox spacing="4.0">
+                            <children>
+                                <HBox alignment="CENTER_LEFT">
+                                    <children>
+                                        <Label style="-fx-font-weight: 500;" text="Water Scarcity" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Label fx:id="scarcityValueLabel" style="-fx-font-weight: bold;" text="0.0%" />
+                                    </children>
+                                </HBox>
+                                <ProgressBar fx:id="scarcityProgressBar" maxWidth="1.7976931348623157E308" progress="0.0" style="-fx-accent: #EF4444;" />
+                            </children>
+                        </VBox>
+
+                        <!-- SANITATION COVERAGE -->
+                        <VBox spacing="4.0">
+                            <children>
+                                <HBox alignment="CENTER_LEFT">
+                                    <children>
+                                        <Label style="-fx-font-weight: 500;" text="Sanitation Coverage" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Label fx:id="sanitationValueLabel" style="-fx-font-weight: bold;" text="0.0%" />
+                                    </children>
+                                </HBox>
+                                <ProgressBar fx:id="sanitationProgressBar" maxWidth="1.7976931348623157E308" progress="0.0" style="-fx-accent: #F59E0B;" />
+                            </children>
+                        </VBox>
+
+                        <!-- POPULATION DENSITY -->
+                        <VBox spacing="4.0">
+                            <children>
+                                <HBox alignment="CENTER_LEFT">
+                                    <children>
+                                        <Label style="-fx-font-weight: 500;" text="Population Density" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Label fx:id="densityValueLabel" style="-fx-font-weight: bold;" text="0 / km²" />
+                                    </children>
+                                </HBox>
+                                <ProgressBar fx:id="densityProgressBar" maxWidth="1.7976931348623157E308" progress="0.0" style="-fx-accent: #0284C7;" />
+                            </children>
+                        </VBox>
+
+                        <!-- TOTAL POPULATION -->
+                        <HBox alignment="CENTER_LEFT" style="-fx-padding: 8px 0 0 0;">
+                            <children>
+                                <Label styleClass="metric-subtext" text="Total Population:" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Label fx:id="populationValueLabel" style="-fx-font-weight: bold; -fx-font-size: 14px;" text="—" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <!-- AUTOMATED RISK INTERPRETATION SUMMARY -->
+                <VBox spacing="8.0">
+                    <children>
+                        <Label styleClass="panel-heading" text="Automated Risk Interpretation" />
+                        <Label fx:id="interpretationLabel" wrapText="true" style="-fx-font-size: 13px; -fx-text-fill: #475569; -fx-line-spacing: 4px;" text="Select a district from the left list to view detailed risk analysis and factor breakdown." />
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </children>
+</HBox>
