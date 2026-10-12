@@ -54,10 +54,10 @@
                         <!-- WATER SCARCITY VS RISK SCATTER CHART -->
                         <VBox HBox.hgrow="ALWAYS" styleClass="content-panel" spacing="10.0">
                             <children>
-                                <Label styleClass="panel-heading" text="Water Scarcity (%) vs Disease Risk Score" />
+                                <Label styleClass="panel-heading" text="Water Risk Deficit (%) vs Disease Risk Score" />
                                 <ScatterChart fx:id="scarcityScatterChart" animated="false" legendVisible="false" prefHeight="300.0">
                                     <xAxis>
-                                        <NumberAxis label="Water Scarcity (%)" lowerBound="0.0" upperBound="100.0" autoRanging="false" tickUnit="20.0" />
+                                        <NumberAxis label="Water Risk Deficit (%)" lowerBound="0.0" upperBound="100.0" autoRanging="false" tickUnit="20.0" />
                                     </xAxis>
                                     <yAxis>
                                         <NumberAxis label="Risk Score (0-100)" lowerBound="0.0" upperBound="100.0" autoRanging="false" tickUnit="20.0" />
@@ -82,6 +82,7 @@
                         </VBox>
                     </children>
                 </HBox>
+                <Label styleClass="metric-subtext" text="Risk metrics use NFHS-5 improved water and sanitation estimates where district/state keys match; other districts use Census 2011 household proxies. Source definitions differ." wrapText="true" />
             </children>
         </VBox>
     </content>

@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
@@ -26,7 +27,7 @@
                         </HBox>
                         <Label fx:id="rank1NameLabel" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="—" />
                         <Label fx:id="rank1ScoreLabel" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #DC2626;" text="Risk Score: — / 100" />
-                        <Label fx:id="rank1MetricsLabel" styleClass="metric-subtext" text="Water Scarcity: — | Sanitation: —" />
+                        <Label fx:id="rank1MetricsLabel" styleClass="metric-subtext" text="Water risk deficit: — | Sanitation: —" />
                     </children>
                 </VBox>
 
@@ -42,7 +43,7 @@
                         </HBox>
                         <Label fx:id="rank2NameLabel" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="—" />
                         <Label fx:id="rank2ScoreLabel" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #D97706;" text="Risk Score: — / 100" />
-                        <Label fx:id="rank2MetricsLabel" styleClass="metric-subtext" text="Water Scarcity: — | Sanitation: —" />
+                        <Label fx:id="rank2MetricsLabel" styleClass="metric-subtext" text="Water risk deficit: — | Sanitation: —" />
                     </children>
                 </VBox>
 
@@ -58,7 +59,7 @@
                         </HBox>
                         <Label fx:id="rank3NameLabel" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="—" />
                         <Label fx:id="rank3ScoreLabel" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #475569;" text="Risk Score: — / 100" />
-                        <Label fx:id="rank3MetricsLabel" styleClass="metric-subtext" text="Water Scarcity: — | Sanitation: —" />
+                        <Label fx:id="rank3MetricsLabel" styleClass="metric-subtext" text="Water risk deficit: — | Sanitation: —" />
                     </children>
                 </VBox>
             </children>
@@ -71,9 +72,10 @@
                     <children>
                         <Label styleClass="panel-heading" text="Full District Risk Score Leaderboard" />
                         <Region HBox.hgrow="ALWAYS" />
-                        <Label styleClass="metric-subtext" text="Sorting Algorithm: QuickSort / MergeSort (Descending Score)" />
+                        <Label styleClass="metric-subtext" text="Score uses NFHS-5 metrics where matched; Census proxy otherwise" />
                     </children>
                 </HBox>
+                <TextField fx:id="searchField" maxWidth="320.0" promptText="Search districts by name..." styleClass="search-field" />
 
                 <TableView fx:id="rankingTableView" VBox.vgrow="ALWAYS" prefHeight="400.0">
                     <columns>
@@ -81,8 +83,8 @@
                         <TableColumn fx:id="districtNameColumn" prefWidth="200.0" text="District Name" />
                         <TableColumn fx:id="riskScoreColumn" prefWidth="130.0" text="Risk Score" />
                         <TableColumn fx:id="riskLevelColumn" prefWidth="150.0" text="Risk Level" />
-                        <TableColumn fx:id="waterScarcityColumn" prefWidth="150.0" text="Water Scarcity" />
-                        <TableColumn fx:id="sanitationColumn" prefWidth="150.0" text="Sanitation Coverage" />
+                        <TableColumn fx:id="waterScarcityColumn" prefWidth="150.0" text="Risk Water Deficit" />
+                        <TableColumn fx:id="sanitationColumn" prefWidth="150.0" text="Risk Sanitation" />
                         <TableColumn fx:id="populationColumn" prefWidth="140.0" text="Population" />
                     </columns>
                     <columnResizePolicy>

@@ -4,9 +4,10 @@ import com.waterborne.model.District;
 import com.waterborne.model.RiskLevel;
 import com.waterborne.model.RiskStatistics;
 import com.waterborne.service.DistrictService;
-import com.waterborne.util.FormatUtil;
+import com.waterborne.util.AlertUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.*;
@@ -41,17 +42,28 @@ public class DataVisualizationController implements Initializable, BaseControlle
 
     private void loadChartData() {
         if (districtService == null) return;
-        try {
-            List<District> districts = districtService.getAllDistricts();
-            RiskStatistics stats = districtService.getRiskStatistics();
-
+        Task<List<District>> task = new Task<>() {
+            @Override
+            protected List<District> call() throws Exception {
+                return districtService.getAllDistricts();
+            }
+        };
+        task.setOnSucceeded(event -> {
+            List<District> districts = task.getValue();
             populateBarChart(districts);
-            populatePieChart(stats);
+            populatePieChart(new RiskStatistics(districts));
             populateScarcityScatter(districts);
             populateSanitationScatter(districts);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        });
+        task.setOnFailed(event -> {
+            Throwable error = task.getException();
+            System.err.println("[ERROR] Failed to load analytics data: " + error.getMessage());
+            AlertUtil.showError("Data Load Error", "Could Not Load Analytics",
+                    "Unable to load district data: " + error.getMessage());
+        });
+        Thread loader = new Thread(task, "analytics-data-loader");
+        loader.setDaemon(true);
+        loader.start();
     }
 
     private void populateBarChart(List<District> districts) {
@@ -59,10 +71,13 @@ public class DataVisualizationController implements Initializable, BaseControlle
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Risk Score");
 
-        for (District d : districts) {
+        districts.stream()
+                .sorted((first, second) -> Double.compare(second.getRiskScore(), first.getRiskScore()))
+                .limit(10)
+                .forEach(d -> {
             XYChart.Data<String, Number> data = new XYChart.Data<>(d.getName(), d.getRiskScore());
             series.getData().add(data);
-        }
+        });
 
         barChart.getData().add(series);
 

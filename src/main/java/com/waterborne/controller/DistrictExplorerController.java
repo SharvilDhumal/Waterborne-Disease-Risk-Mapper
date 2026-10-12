@@ -3,9 +3,12 @@ package com.waterborne.controller;
 import com.waterborne.model.District;
 import com.waterborne.model.RiskLevel;
 import com.waterborne.service.DistrictService;
+import com.waterborne.util.AlertUtil;
 import com.waterborne.util.FormatUtil;
+import javafx.concurrent.Task;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -13,9 +16,11 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
@@ -42,9 +47,11 @@ public class DistrictExplorerController implements Initializable, BaseController
 
     @FXML private Label populationValueLabel;
     @FXML private Label interpretationLabel;
+    @FXML private Label sourceComparisonLabel;
 
     private DistrictService districtService;
     private final ObservableList<District> masterDistricts = FXCollections.observableArrayList();
+    private FilteredList<District> filteredDistricts;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -59,6 +66,8 @@ public class DistrictExplorerController implements Initializable, BaseController
     }
 
     private void setupListView() {
+        filteredDistricts = new FilteredList<>(masterDistricts, district -> true);
+        districtListView.setItems(filteredDistricts);
         districtListView.setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(District item, boolean empty) {
@@ -68,19 +77,29 @@ public class DistrictExplorerController implements Initializable, BaseController
                     setGraphic(null);
                 } else {
                     Label name = new Label(item.getName());
+                    name.setWrapText(true);
+                    name.setMaxWidth(190.0);
                     name.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
+
+                    Label state = new Label(item.getState() == null ? "" : item.getState());
+                    state.setWrapText(true);
+                    state.setMaxWidth(190.0);
+                    state.getStyleClass().add("metric-subtext");
+                    VBox districtLabels = new VBox(2.0, name, state);
 
                     Region spacer = new Region();
                     HBox.setHgrow(spacer, Priority.ALWAYS);
 
-                    Label badge = new Label(item.getRiskLevel().name());
+                    Label badge = new Label(item.getRiskLevel().getLabel());
                     badge.getStyleClass().add("badge");
+                    badge.setMinWidth(Region.USE_PREF_SIZE);
                     if (item.getRiskLevel() == RiskLevel.HIGH) badge.getStyleClass().add("badge-high");
                     else if (item.getRiskLevel() == RiskLevel.MODERATE) badge.getStyleClass().add("badge-moderate");
                     else badge.getStyleClass().add("badge-low");
 
-                    HBox container = new HBox(name, spacer, badge);
+                    HBox container = new HBox(8.0, districtLabels, spacer, badge);
                     container.setAlignment(Pos.CENTER_LEFT);
+                    container.setMaxWidth(Double.MAX_VALUE);
                     setGraphic(container);
                 }
             }
@@ -94,34 +113,44 @@ public class DistrictExplorerController implements Initializable, BaseController
     }
 
     private void setupSearchListener() {
-        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal == null || newVal.trim().isEmpty()) {
-                districtListView.setItems(masterDistricts);
-            } else {
-                String query = newVal.trim().toLowerCase();
-                ObservableList<District> filtered = masterDistricts.filtered(
-                        d -> d.getName().toLowerCase().contains(query)
-                );
-                districtListView.setItems(filtered);
-            }
-            if (!districtListView.getItems().isEmpty()) {
-                districtListView.getSelectionModel().selectFirst();
-            }
-        });
+        searchField.textProperty().addListener((obs, oldValue, newValue) -> applySearch(newValue));
     }
 
     private void loadDistricts() {
         if (districtService == null) return;
-        try {
-            List<District> list = districtService.getAllDistricts();
-            masterDistricts.setAll(list);
-            districtListView.setItems(masterDistricts);
-
+        Task<List<District>> task = new Task<>() {
+            @Override
+            protected List<District> call() throws Exception {
+                return districtService.getAllDistricts();
+            }
+        };
+        task.setOnSucceeded(event -> {
+            masterDistricts.setAll(task.getValue());
+            applySearch(searchField.getText());
             if (!masterDistricts.isEmpty()) {
                 districtListView.getSelectionModel().selectFirst();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        });
+        task.setOnFailed(event -> {
+            Throwable error = task.getException();
+            System.err.println("[ERROR] Failed to load districts: " + error.getMessage());
+            AlertUtil.showError("Data Load Error", "Could Not Load Districts",
+                    "Unable to load district data: " + error.getMessage());
+        });
+
+        Thread loader = new Thread(task, "district-explorer-data-loader");
+        loader.setDaemon(true);
+        loader.start();
+    }
+
+    private void applySearch(String searchText) {
+        String query = searchText == null ? "" : searchText.trim().toLowerCase(Locale.ROOT);
+        filteredDistricts.setPredicate(district ->
+                query.isEmpty() || district.getName().toLowerCase(Locale.ROOT).contains(query));
+        if (!filteredDistricts.isEmpty()) {
+            districtListView.getSelectionModel().selectFirst();
+        } else {
+            districtListView.getSelectionModel().clearSelection();
         }
     }
 
@@ -144,6 +173,7 @@ public class DistrictExplorerController implements Initializable, BaseController
 
         sanitationValueLabel.setText(FormatUtil.formatPercentage(district.getSanitationCoverage()));
         sanitationProgressBar.setProgress(district.getSanitationCoverage() / 100.0);
+        updateSourceComparison(district);
 
         densityValueLabel.setText(FormatUtil.formatDensity(district.getPopulationDensity()));
         double densityProgress = Math.min(1.0, district.getPopulationDensity() / 2000.0);
@@ -153,6 +183,30 @@ public class DistrictExplorerController implements Initializable, BaseController
 
         // Automated Risk Interpretation Summary Generation
         interpretationLabel.setText(generateInterpretationText(district));
+    }
+
+    private void updateSourceComparison(District district) {
+        if (!Double.isFinite(district.getCensusWaterScarcity())
+                || !Double.isFinite(district.getCensusSanitationCoverage())) {
+            sourceComparisonLabel.setText("Census 2011 comparison metrics are not available for this data source.");
+            return;
+        }
+
+        String censusValues = "Census 2011 proxies: water deficit "
+                + FormatUtil.formatPercentage(district.getCensusWaterScarcity())
+                + ", on-premises latrine coverage "
+                + FormatUtil.formatPercentage(district.getCensusSanitationCoverage()) + ".";
+        if (!district.hasNfhs5Metrics()) {
+            sourceComparisonLabel.setText(censusValues
+                    + " No matched NFHS-5 district record; risk uses Census values.");
+            return;
+        }
+
+        sourceComparisonLabel.setText(censusValues + "\nNFHS-5 survey: improved drinking-water access "
+                + FormatUtil.formatPercentage(district.getNfhsImprovedWaterCoverage())
+                + ", improved sanitation "
+                + FormatUtil.formatPercentage(district.getNfhsImprovedSanitationCoverage())
+                + ". Risk uses NFHS-5 values for matched districts. Definitions differ, so these are comparisons, not identical measures.");
     }
 
     private String generateInterpretationText(District d) {

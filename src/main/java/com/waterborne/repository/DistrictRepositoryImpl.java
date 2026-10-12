@@ -14,14 +14,29 @@ import java.util.Optional;
  */
 public class DistrictRepositoryImpl implements DistrictRepository {
 
+    private static final String DEFAULT_URL =
+            "jdbc:mysql://localhost:3306/waterborne_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+
     private final String url;
     private final String user;
     private final String password;
+
+    public DistrictRepositoryImpl() {
+        this(
+                environmentOrDefault("WATERBORNE_DB_URL", DEFAULT_URL),
+                environmentOrDefault("WATERBORNE_DB_USER", "root"),
+                environmentOrDefault("WATERBORNE_DB_PASSWORD", ""));
+    }
 
     public DistrictRepositoryImpl(String url, String user, String password) {
         this.url = url;
         this.user = user;
         this.password = password;
+    }
+
+    private static String environmentOrDefault(String name, String defaultValue) {
+        String value = System.getenv(name);
+        return value == null || value.isBlank() ? defaultValue : value.trim();
     }
 
     private Connection getConnection() throws SQLException {

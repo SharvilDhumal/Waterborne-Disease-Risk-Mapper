@@ -4,8 +4,8 @@ import com.waterborne.model.District;
 import com.waterborne.model.RiskLevel;
 import com.waterborne.model.RiskStatistics;
 import com.waterborne.service.DistrictService;
+import com.waterborne.util.AlertUtil;
 import com.waterborne.util.FormatUtil;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -64,23 +64,28 @@ public class DashboardController implements Initializable, BaseController {
 
             @Override
             protected Void call() throws Exception {
-                stats = districtService.getRiskStatistics();
                 districts = districtService.getAllDistricts();
+                stats = new RiskStatistics(districts);
                 return null;
             }
 
             @Override
             protected void succeeded() {
-                Platform.runLater(() -> updateUI(stats, districts));
+                updateUI(stats, districts);
             }
 
             @Override
             protected void failed() {
-                System.err.println("[ERROR] Failed to load dashboard stats: " + getException().getMessage());
+                Throwable error = getException();
+                System.err.println("[ERROR] Failed to load dashboard stats: " + error.getMessage());
+                AlertUtil.showError("Data Load Error", "Could Not Load Dashboard",
+                        "Unable to load district data: " + error.getMessage());
             }
         };
 
-        new Thread(task).start();
+        Thread loader = new Thread(task, "dashboard-data-loader");
+        loader.setDaemon(true);
+        loader.start();
     }
 
     private void updateUI(RiskStatistics stats, List<District> districts) {
@@ -115,10 +120,10 @@ public class DashboardController implements Initializable, BaseController {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Risk Score");
 
-        // Display top 8 districts in bar chart
+        // Limit category labels to keep the chart readable with the full district dataset.
         districts.stream()
                 .sorted((d1, d2) -> Double.compare(d2.getRiskScore(), d1.getRiskScore()))
-                .limit(8)
+                .limit(10)
                 .forEach(d -> series.getData().add(new XYChart.Data<>(d.getName(), d.getRiskScore())));
 
         riskBarChart.getData().add(series);

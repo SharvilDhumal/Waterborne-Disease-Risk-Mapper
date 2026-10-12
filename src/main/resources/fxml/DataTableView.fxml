@@ -34,8 +34,12 @@
             <columns>
                 <TableColumn fx:id="idColumn" prefWidth="60.0" text="ID" />
                 <TableColumn fx:id="nameColumn" prefWidth="180.0" text="District" />
-                <TableColumn fx:id="waterScarcityColumn" prefWidth="140.0" text="Water Scarcity" />
-                <TableColumn fx:id="sanitationColumn" prefWidth="150.0" text="Sanitation Coverage" />
+                <TableColumn fx:id="waterScarcityColumn" prefWidth="150.0" text="Risk Water Deficit*" />
+                <TableColumn fx:id="censusWaterScarcityColumn" prefWidth="145.0" text="Census Water Deficit" />
+                <TableColumn fx:id="nfhsWaterCoverageColumn" prefWidth="150.0" text="NFHS Improved Water" />
+                <TableColumn fx:id="sanitationColumn" prefWidth="150.0" text="Risk Sanitation*" />
+                <TableColumn fx:id="censusSanitationColumn" prefWidth="150.0" text="Census Latrine Proxy" />
+                <TableColumn fx:id="nfhsSanitationCoverageColumn" prefWidth="155.0" text="NFHS Improved Sanitation" />
                 <TableColumn fx:id="populationColumn" prefWidth="130.0" text="Population" />
                 <TableColumn fx:id="riskScoreColumn" prefWidth="120.0" text="Risk Score" />
                 <TableColumn fx:id="riskLevelColumn" prefWidth="150.0" text="Risk Level" />
@@ -44,5 +48,6 @@
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
             </columnResizePolicy>
         </TableView>
+        <Label styleClass="metric-subtext" text="*Risk metrics use NFHS-5 when matched; unmatched districts use Census 2011 proxies. Survey and census definitions differ." wrapText="true" />
     </children>
 </VBox>

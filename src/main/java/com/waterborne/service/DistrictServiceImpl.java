@@ -12,43 +12,22 @@ import java.util.stream.Collectors;
 
 /**
  * Production implementation of DistrictService.
- * Integrates Student 2 Database Layer (DistrictRepository) and Student 1 Algorithm Layer (RiskCalculatorService).
- * Falls back safely to Mock dataset if database connection fails.
+ * Integrates a district repository and the risk ranking/search algorithms.
  */
 public class DistrictServiceImpl implements DistrictService {
 
     private final DistrictRepository repository;
     private final RiskCalculatorService riskCalculator;
-    private final DistrictService mockFallbackService;
 
     public DistrictServiceImpl(DistrictRepository repository, RiskCalculatorService riskCalculator) {
         this.repository = repository;
         this.riskCalculator = riskCalculator;
-        this.mockFallbackService = new MockDistrictDataService();
     }
 
     @Override
     public List<District> getAllDistricts() throws Exception {
-        try {
-            if (repository != null) {
-                List<District> districts = repository.findAll();
-                if (districts != null && !districts.isEmpty()) {
-                    if (riskCalculator != null) {
-                        for (District d : districts) {
-                            double score = riskCalculator.calculateRiskScore(
-                                    d.getWaterScarcity(), d.getSanitationCoverage(), d.getPopulation(), d.getPopulationDensity()
-                            );
-                            d.setRiskScore(score);
-                            d.setRiskLevel(riskCalculator.classifyRisk(score));
-                        }
-                    }
-                    return districts;
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("[WARN] Database query failed. Falling back to Mock dataset: " + e.getMessage());
-        }
-        return mockFallbackService.getAllDistricts();
+        List<District> districts = repository.findAll();
+        return districts;
     }
 
     @Override
@@ -100,6 +79,6 @@ public class DistrictServiceImpl implements DistrictService {
         if (riskCalculator != null) {
             return riskCalculator.sortByRiskScore(districts, false);
         }
-        return mockFallbackService.getRiskRanking();
+        return districts;
     }
 }

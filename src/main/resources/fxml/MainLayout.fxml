@@ -11,25 +11,33 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.waterborne.controller.MainLayoutController">
+<StackPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.waterborne.controller.MainLayoutController">
+  <children>
+    <BorderPane fx:id="rootLayout">
     <!-- LEFT SIDEBAR -->
     <left>
-        <VBox spacing="15.0" styleClass="sidebar" BorderPane.alignment="CENTER">
+        <VBox fx:id="sidebar" spacing="15.0" styleClass="sidebar" BorderPane.alignment="CENTER">
             <padding>
                 <Insets bottom="20.0" left="15.0" right="15.0" top="25.0" />
             </padding>
             <children>
                 <!-- APP BRANDING -->
-                <VBox spacing="4.0">
+                <HBox alignment="CENTER_LEFT" spacing="8.0">
                     <children>
-                        <Label styleClass="sidebar-title" text="WATERBORNE" />
-                        <Label styleClass="sidebar-title" text="RISK MAPPER" textFill="#0284c7" />
-                        <Label styleClass="sidebar-subtitle" text="College PBL Analytics Mini Project" />
+                        <VBox spacing="4.0">
+                            <children>
+                                <Label styleClass="sidebar-title" text="WATERBORNE" />
+                                <Label styleClass="sidebar-title" text="RISK MAPPER" textFill="#0284c7" />
+                                <Label styleClass="sidebar-subtitle" text="College PBL Analytics Mini Project" />
+                            </children>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button mnemonicParsing="false" onAction="#handleCloseSidebar" styleClass="sidebar-close-button" text="×" accessibleText="Close navigation sidebar" />
                     </children>
-                    <VBox.margin>
+                    <HBox.margin>
                         <Insets bottom="20.0" />
-                    </VBox.margin>
-                </VBox>
+                    </HBox.margin>
+                </HBox>
 
                 <!-- NAVIGATION BUTTONS -->
                 <Button fx:id="btnDashboard" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDashboard" styleClass="nav-button" text="📊   Dashboard Overview" />
@@ -58,9 +66,10 @@
                 <!-- HEADER BAR -->
                 <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="header-bar">
                     <children>
+                        <Button fx:id="btnToggleSidebar" mnemonicParsing="false" onAction="#handleToggleSidebar" styleClass="sidebar-toggle-button" text="☰" accessibleText="Hide navigation sidebar" accessibleHelp="Shows or hides the navigation sidebar." />
                         <Label fx:id="viewTitleLabel" styleClass="view-title" text="Dashboard Overview" />
                         <Region HBox.hgrow="ALWAYS" />
-                        <Label fx:id="statusLabel" styleClass="system-status-online" text="🟢 System Active (Mock Data Layer)" />
+                        <Label fx:id="statusLabel" text="MySQL Data Source" />
                         <Button mnemonicParsing="false" onAction="#handleRefreshData" styleClass="reset-button" text="🔄  Refresh" />
                     </children>
                 </HBox>
@@ -74,4 +83,7 @@
             </children>
         </VBox>
     </center>
-</BorderPane>
+    </BorderPane>
+    <Button fx:id="btnRevealSidebar" alignment="CENTER" managed="false" onAction="#handleRevealSidebar" onMouseEntered="#handleRevealSidebar" styleClass="sidebar-reveal-button" text="›" visible="false" StackPane.alignment="CENTER_LEFT" accessibleText="Show navigation sidebar" />
+  </children>
+</StackPane>

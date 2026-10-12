@@ -51,6 +51,51 @@
     -fx-font-weight: bold;
 }
 
+.sidebar-toggle-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #475569;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 6px 10px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+
+.sidebar-toggle-button:hover {
+    -fx-background-color: #E2E8F0;
+    -fx-text-fill: #0F172A;
+}
+
+.sidebar-close-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 22px;
+    -fx-padding: 0 7px 2px 7px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+
+.sidebar-close-button:hover {
+    -fx-background-color: #1E293B;
+    -fx-text-fill: #FFFFFF;
+}
+
+.sidebar-reveal-button {
+    -fx-background-color: #0F172A;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-min-width: 24px;
+    -fx-pref-width: 24px;
+    -fx-min-height: 56px;
+    -fx-background-radius: 0 8px 8px 0;
+    -fx-cursor: hand;
+}
+
+.sidebar-reveal-button:hover {
+    -fx-background-color: #0284C7;
+}
+
 /* --- HEADER BAR --- */
 .header-bar {
     -fx-background-color: #FFFFFF;
@@ -69,6 +114,23 @@
     -fx-text-fill: #10B981;
     -fx-font-weight: bold;
     -fx-font-size: 12px;
+}
+
+.system-status-warning {
+    -fx-text-fill: #D97706;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+.system-status-error {
+    -fx-text-fill: #DC2626;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+.scatter-chart .chart-symbol {
+    -fx-background-radius: 2px;
+    -fx-padding: 2px;
 }
 
 /* --- DASHBOARD METRIC CARDS --- */

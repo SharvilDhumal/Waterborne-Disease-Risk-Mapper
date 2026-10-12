@@ -1,16 +1,20 @@
 package com.waterborne.controller;
 
 import com.waterborne.service.DistrictService;
-import com.waterborne.service.MockDistrictDataService;
+import com.waterborne.config.DatabaseConfig;
 import com.waterborne.util.AlertUtil;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
@@ -24,9 +28,13 @@ import java.util.ResourceBundle;
  */
 public class MainLayoutController implements Initializable {
 
+    @FXML private BorderPane rootLayout;
+    @FXML private VBox sidebar;
     @FXML private StackPane contentArea;
     @FXML private Label viewTitleLabel;
     @FXML private Label statusLabel;
+    @FXML private Button btnToggleSidebar;
+    @FXML private Button btnRevealSidebar;
 
     @FXML private Button btnDashboard;
     @FXML private Button btnExplorer;
@@ -37,14 +45,40 @@ public class MainLayoutController implements Initializable {
     private DistrictService districtService;
     private final Map<String, Node> viewCache = new HashMap<>();
     private Button currentActiveButton;
+    private boolean sidebarVisible = true;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Default to Mock service for standalone UI development/testing
-        this.districtService = new MockDistrictDataService();
+        try {
+            DatabaseConfig.DataSource dataSource = DatabaseConfig.getDataSource();
+            this.districtService = DatabaseConfig.createDistrictService(dataSource);
+            if (statusLabel != null) {
+                statusLabel.setText(switch (dataSource) {
+                    case CENSUS_AND_NFHS5 -> "Census 2011 + NFHS-5 Data";
+                    case MYSQL -> "MySQL Data Source Configured";
+                    case MOCK -> "🟡 Mock Data (Explicit)";
+                });
+                statusLabel.getStyleClass().removeAll(
+                        "system-status-online", "system-status-warning", "system-status-error");
+                if (dataSource == DatabaseConfig.DataSource.MOCK) {
+                    statusLabel.getStyleClass().add("system-status-warning");
+                } else {
+                    statusLabel.getStyleClass().add("system-status-online");
+                }
+            }
+        } catch (IllegalStateException e) {
+            if (statusLabel != null) {
+                statusLabel.setText("🔴 Data source configuration error");
+                statusLabel.getStyleClass().removeAll("system-status-online", "system-status-warning");
+                statusLabel.getStyleClass().add("system-status-error");
+            }
+            AlertUtil.showError("Data Source Configuration Error", "Unable to Configure Data Source", e.getMessage());
+            return;
+        }
 
         // Load initial Dashboard view
         showDashboard(null);
+        updateSidebarToggle();
     }
 
     public void setDistrictService(DistrictService districtService) {
@@ -93,6 +127,39 @@ public class MainLayoutController implements Initializable {
         else if (currentActiveButton == btnRanking) showRiskRanking(null);
         else if (currentActiveButton == btnVisualization) showDataVisualization(null);
         else if (currentActiveButton == btnDataTable) showDataTable(null);
+    }
+
+    @FXML
+    public void handleToggleSidebar(ActionEvent event) {
+        sidebarVisible = !sidebarVisible;
+        rootLayout.setLeft(sidebarVisible ? sidebar : null);
+        updateSidebarToggle();
+    }
+
+    @FXML
+    public void handleCloseSidebar(ActionEvent event) {
+        sidebarVisible = false;
+        rootLayout.setLeft(null);
+        updateSidebarToggle();
+    }
+
+    @FXML
+    public void handleRevealSidebar(Event event) {
+        showSidebar();
+    }
+
+    private void showSidebar() {
+        sidebarVisible = true;
+        rootLayout.setLeft(sidebar);
+        updateSidebarToggle();
+    }
+
+    private void updateSidebarToggle() {
+        String action = sidebarVisible ? "Hide navigation sidebar" : "Show navigation sidebar";
+        btnToggleSidebar.setTooltip(new Tooltip(action));
+        btnToggleSidebar.setAccessibleText(action);
+        btnRevealSidebar.setVisible(!sidebarVisible);
+        btnRevealSidebar.setManaged(!sidebarVisible);
     }
 
     private void setActiveButton(Button button, String title) {

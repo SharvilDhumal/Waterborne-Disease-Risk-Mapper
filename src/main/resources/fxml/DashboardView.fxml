@@ -102,7 +102,7 @@
                                     <children>
                                         <VBox HBox.hgrow="ALWAYS">
                                             <children>
-                                                <Label styleClass="metric-subtext" text="Water Scarcity" />
+                                                <Label styleClass="metric-subtext" text="Water Risk Deficit" />
                                                 <Label fx:id="spotlightScarcityLabel" style="-fx-font-weight: bold;" text="—" />
                                             </children>
                                         </VBox>
@@ -141,6 +141,7 @@
                         <VBox HBox.hgrow="ALWAYS" styleClass="content-panel" spacing="10.0">
                             <children>
                                 <Label styleClass="panel-heading" text="District Risk Comparison" />
+                                <Label styleClass="metric-subtext" text="NFHS-5 where matched; Census 2011 proxy otherwise" />
                                 <BarChart fx:id="riskBarChart" animated="false" legendVisible="false" prefHeight="280.0">
                                     <xAxis>
                                         <CategoryAxis label="District" />

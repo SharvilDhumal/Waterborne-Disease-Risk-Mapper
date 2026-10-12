@@ -9,8 +9,13 @@ import java.util.Objects;
 public class District {
     private int id;
     private String name;
+    private String state;
     private double waterScarcity; // Percentage (0 - 100%)
     private double sanitationCoverage; // Percentage (0 - 100%)
+    private double censusWaterScarcity = Double.NaN;
+    private double censusSanitationCoverage = Double.NaN;
+    private double nfhsImprovedWaterCoverage = Double.NaN;
+    private double nfhsImprovedSanitationCoverage = Double.NaN;
     private long population;
     private double populationDensity; // People per sq km
     private double riskScore; // 0 - 100
@@ -65,6 +70,14 @@ public class District {
         this.name = name;
     }
 
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
     public double getWaterScarcity() {
         return waterScarcity;
     }
@@ -79,6 +92,40 @@ public class District {
 
     public void setSanitationCoverage(double sanitationCoverage) {
         this.sanitationCoverage = sanitationCoverage;
+    }
+
+    public double getCensusWaterScarcity() {
+        return censusWaterScarcity;
+    }
+
+    public double getCensusSanitationCoverage() {
+        return censusSanitationCoverage;
+    }
+
+    public double getNfhsImprovedWaterCoverage() {
+        return nfhsImprovedWaterCoverage;
+    }
+
+    public double getNfhsImprovedSanitationCoverage() {
+        return nfhsImprovedSanitationCoverage;
+    }
+
+    public boolean hasNfhs5Metrics() {
+        return Double.isFinite(nfhsImprovedWaterCoverage)
+                && Double.isFinite(nfhsImprovedSanitationCoverage);
+    }
+
+    public void setCensusMetrics(double waterScarcity, double sanitationCoverage) {
+        censusWaterScarcity = waterScarcity;
+        censusSanitationCoverage = sanitationCoverage;
+    }
+
+    public void applyNfhs5Metrics(double improvedWaterCoverage, double improvedSanitationCoverage) {
+        nfhsImprovedWaterCoverage = improvedWaterCoverage;
+        nfhsImprovedSanitationCoverage = improvedSanitationCoverage;
+        waterScarcity = 100.0 - improvedWaterCoverage;
+        sanitationCoverage = improvedSanitationCoverage;
+        recalculateRisk();
     }
 
     public long getPopulation() {

@@ -14,7 +14,7 @@
 <HBox spacing="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.waterborne.controller.DistrictExplorerController">
     <children>
         <!-- LEFT SIDE: DISTRICT LIST & SEARCH -->
-        <VBox prefWidth="320.0" spacing="12.0" styleClass="content-panel">
+        <VBox minWidth="280.0" prefWidth="310.0" maxWidth="340.0" spacing="12.0" styleClass="content-panel">
             <children>
                 <Label styleClass="panel-heading" text="Select District" />
                 <TextField fx:id="searchField" promptText="🔍  Search district..." styleClass="search-field" />
@@ -23,7 +23,7 @@
         </VBox>
 
         <!-- RIGHT SIDE: DISTRICT PROFILE INSPECTOR -->
-        <VBox HBox.hgrow="ALWAYS" spacing="18.0" styleClass="content-panel">
+        <VBox minWidth="0.0" HBox.hgrow="ALWAYS" spacing="18.0" styleClass="content-panel">
             <padding>
                 <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
             </padding>
@@ -52,7 +52,7 @@
                             <children>
                                 <HBox alignment="CENTER_LEFT">
                                     <children>
-                                        <Label style="-fx-font-weight: 500;" text="Water Scarcity" />
+                                        <Label style="-fx-font-weight: 500;" text="Water Risk Deficit (NFHS where matched)" />
                                         <Region HBox.hgrow="ALWAYS" />
                                         <Label fx:id="scarcityValueLabel" style="-fx-font-weight: bold;" text="0.0%" />
                                     </children>
@@ -66,7 +66,7 @@
                             <children>
                                 <HBox alignment="CENTER_LEFT">
                                     <children>
-                                        <Label style="-fx-font-weight: 500;" text="Sanitation Coverage" />
+                                        <Label style="-fx-font-weight: 500;" text="Sanitation Coverage (NFHS where matched)" />
                                         <Region HBox.hgrow="ALWAYS" />
                                         <Label fx:id="sanitationValueLabel" style="-fx-font-weight: bold;" text="0.0%" />
                                     </children>
@@ -88,6 +88,8 @@
                                 <ProgressBar fx:id="densityProgressBar" maxWidth="1.7976931348623157E308" progress="0.0" style="-fx-accent: #0284C7;" />
                             </children>
                         </VBox>
+
+                        <Label fx:id="sourceComparisonLabel" wrapText="true" styleClass="metric-subtext" text="Census 2011 and NFHS-5 comparison will appear for the selected district." />
 
                         <!-- TOTAL POPULATION -->
                         <HBox alignment="CENTER_LEFT" style="-fx-padding: 8px 0 0 0;">

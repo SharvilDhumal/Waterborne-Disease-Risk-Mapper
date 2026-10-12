@@ -20,7 +20,7 @@ public class FormatUtil {
     }
 
     public static String formatPercentage(double value) {
-        return String.format(Locale.US, "%.1f%%", value);
+        return String.format(Locale.US, "%.2f%%", value);
     }
 
     public static String formatScore(double score) {
