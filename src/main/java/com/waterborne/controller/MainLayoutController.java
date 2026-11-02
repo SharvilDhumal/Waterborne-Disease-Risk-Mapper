@@ -41,6 +41,8 @@ public class MainLayoutController implements Initializable {
     @FXML private Button btnRanking;
     @FXML private Button btnVisualization;
     @FXML private Button btnDataTable;
+    @FXML private Button btnWaterQuality;
+    @FXML private Button btnDiseaseAnalysis;
 
     private DistrictService districtService;
     private final Map<String, Node> viewCache = new HashMap<>();
@@ -120,6 +122,18 @@ public class MainLayoutController implements Initializable {
     }
 
     @FXML
+    public void showWaterQuality(ActionEvent event) {
+        setActiveButton(btnWaterQuality, "Water Quality Analysis");
+        loadView("/fxml/WaterQualityView.fxml");
+    }
+
+    @FXML
+    public void showDiseaseAnalysis(ActionEvent event) {
+        setActiveButton(btnDiseaseAnalysis, "Disease & Environmental Analysis");
+        loadView("/fxml/DiseaseAnalysisView.fxml");
+    }
+
+    @FXML
     public void handleRefreshData(ActionEvent event) {
         viewCache.clear(); // Clear cached views on manual refresh
         if (currentActiveButton == btnDashboard) showDashboard(null);
@@ -127,6 +141,8 @@ public class MainLayoutController implements Initializable {
         else if (currentActiveButton == btnRanking) showRiskRanking(null);
         else if (currentActiveButton == btnVisualization) showDataVisualization(null);
         else if (currentActiveButton == btnDataTable) showDataTable(null);
+        else if (currentActiveButton == btnWaterQuality) showWaterQuality(null);
+        else if (currentActiveButton == btnDiseaseAnalysis) showDiseaseAnalysis(null);
     }
 
     @FXML

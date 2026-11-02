@@ -69,6 +69,8 @@
                 <includes>
                     <include>india-districts-census-2011.csv</include>
                     <include>NFHS_5_India_Districts_Factsheet_Data.xls</include>
+                    <include>Water_pond_tanks_2021.csv</include>
+                    <include>water_pollution_disease.csv</include>
                 </includes>
             </resource>
         </resources>

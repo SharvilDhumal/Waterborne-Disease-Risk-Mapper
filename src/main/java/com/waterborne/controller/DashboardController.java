@@ -15,9 +15,11 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
@@ -115,20 +117,40 @@ public class DashboardController implements Initializable, BaseController {
             else spotlightBadgeLabel.getStyleClass().add("badge-low");
         }
 
-        // Bar Chart (District Risk Comparison)
+        // Compare the source-based risk inputs for the districts with the highest composite scores.
         riskBarChart.getData().clear();
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Risk Score");
+        XYChart.Series<String, Number> waterDeficitSeries = new XYChart.Series<>();
+        waterDeficitSeries.setName("Water-risk deficit");
+        XYChart.Series<String, Number> sanitationDeficitSeries = new XYChart.Series<>();
+        sanitationDeficitSeries.setName("Sanitation deficit");
 
-        // Limit category labels to keep the chart readable with the full district dataset.
         districts.stream()
                 .sorted((d1, d2) -> Double.compare(d2.getRiskScore(), d1.getRiskScore()))
                 .limit(10)
-                .forEach(d -> series.getData().add(new XYChart.Data<>(d.getName(), d.getRiskScore())));
+                .forEach(district -> {
+                    String category = district.getState() == null || district.getState().isBlank()
+                            ? district.getName()
+                            : district.getName() + " (" + district.getState() + ")";
+                    String source = district.hasNfhs5Metrics()
+                            ? "NFHS-5"
+                            : Double.isFinite(district.getCensusWaterScarcity())
+                                    ? "Census 2011"
+                                    : "Configured data source";
+                    double waterDeficit = district.getWaterScarcity();
+                    double sanitationDeficit = 100.0 - district.getSanitationCoverage();
+                    XYChart.Data<String, Number> waterData =
+                            new XYChart.Data<>(category, waterDeficit);
+                    XYChart.Data<String, Number> sanitationData =
+                            new XYChart.Data<>(category, sanitationDeficit);
+                    installMetricTooltip(waterData, district, "Water-risk deficit", waterDeficit, source);
+                    installMetricTooltip(sanitationData, district, "Sanitation deficit", sanitationDeficit, source);
+                    waterDeficitSeries.getData().add(waterData);
+                    sanitationDeficitSeries.getData().add(sanitationData);
+                });
 
-        riskBarChart.getData().add(series);
+        riskBarChart.getData().addAll(waterDeficitSeries, sanitationDeficitSeries);
 
-        // Pie Chart (Distribution)
+        // Pie Chart (district counts by composite risk-score category)
         ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
         if (stats.getHighRiskCount() > 0) {
             pieData.add(new PieChart.Data("High Risk (" + stats.getHighRiskCount() + ")", stats.getHighRiskCount()));
@@ -140,5 +162,19 @@ public class DashboardController implements Initializable, BaseController {
             pieData.add(new PieChart.Data("Low Risk (" + stats.getLowRiskCount() + ")", stats.getLowRiskCount()));
         }
         riskPieChart.setData(pieData);
+    }
+
+    private void installMetricTooltip(XYChart.Data<String, Number> data, District district,
+                                      String metric, double value, String source) {
+        String location = district.getState() == null || district.getState().isBlank()
+                ? district.getName()
+                : district.getName() + ", " + district.getState();
+        Tooltip tooltip = new Tooltip(String.format(
+                Locale.ROOT, "%s\n%s: %.2f%%\nSource: %s", location, metric, value, source));
+        data.nodeProperty().addListener((observable, oldNode, newNode) -> {
+            if (newNode != null) {
+                Tooltip.install(newNode, tooltip);
+            }
+        });
     }
 }

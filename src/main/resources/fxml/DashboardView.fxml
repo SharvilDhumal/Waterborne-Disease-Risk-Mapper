@@ -140,14 +140,14 @@
                         <!-- DISTRICT COMPARISON BAR CHART -->
                         <VBox HBox.hgrow="ALWAYS" styleClass="content-panel" spacing="10.0">
                             <children>
-                                <Label styleClass="panel-heading" text="District Risk Comparison" />
-                                <Label styleClass="metric-subtext" text="NFHS-5 where matched; Census 2011 proxy otherwise" />
-                                <BarChart fx:id="riskBarChart" animated="false" legendVisible="false" prefHeight="280.0">
+                                <Label styleClass="panel-heading" text="Water and Sanitation Deficits — Top 10 Risk Districts" />
+                                <Label styleClass="metric-subtext" text="Water deficit = 100 − improved-water access; sanitation deficit = 100 − sanitation coverage. Values use the active source; combined source uses NFHS-5 where matched and Census household proxies otherwise." wrapText="true" />
+                                <BarChart fx:id="riskBarChart" animated="false" legendVisible="true" prefHeight="280.0">
                                     <xAxis>
-                                        <CategoryAxis label="District" />
+                                        <CategoryAxis label="District (State/UT)" />
                                     </xAxis>
                                     <yAxis>
-                                        <NumberAxis label="Risk Score (0-100)" upperBound="100.0" />
+                                        <NumberAxis label="Deficit (%)" lowerBound="0.0" upperBound="100.0" autoRanging="false" tickUnit="20.0" />
                                     </yAxis>
                                 </BarChart>
                             </children>
@@ -156,7 +156,7 @@
                         <!-- RISK CATEGORY DISTRIBUTION PIE CHART -->
                         <VBox prefWidth="380.0" styleClass="content-panel" spacing="10.0">
                             <children>
-                                <Label styleClass="panel-heading" text="Risk Category Distribution" />
+                                <Label styleClass="panel-heading" text="Calculated Risk Score Categories" />
                                 <PieChart fx:id="riskPieChart" animated="false" prefHeight="280.0" />
                             </children>
                         </VBox>

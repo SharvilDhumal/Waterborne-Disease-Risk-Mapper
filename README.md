@@ -18,13 +18,14 @@ A JavaFX desktop application for exploring district-level water, sanitation, and
 
 ## What the application does
 
-The application provides five screens, available from the navigation sidebar:
+The application provides seven screens, available from the navigation sidebar:
 
 1. **Dashboard Overview**
    - Shows the number of districts and counts in the high-, moderate-, and low-risk categories.
    - Highlights the highest-scoring district and summarizes its key indicators.
    - Presents average risk score and risk-category distribution.
-   - The district risk bar chart shows the ten highest-scoring districts.
+   - The bar chart compares water-risk deficit and sanitation deficit for the ten highest-scoring districts, using NFHS-5 values where matched and Census household proxies otherwise.
+   - The pie chart shows district counts grouped by their calculated composite risk-score categories.
 
 2. **District Explorer**
    - Lets users search and select a district from the district/state list.
@@ -45,6 +46,18 @@ The application provides five screens, available from the navigation sidebar:
    - Supports text search, risk-category filtering, and selectable sort orders.
    - Displays both the applied risk metrics and source-specific Census/NFHS-5 measures where available.
 
+6. **Water Quality Analysis**
+   - Summarizes monitoring stations, states, average pH, BOD, dissolved oxygen, and high-coliform locations.
+   - Filters by state, water-body type, and station/location search; the cards, charts, and sortable station table follow the selected filters.
+   - Compares BOD and coliform measurements, shows pH and dissolved-oxygen distributions and water-body types, and displays a selected station's minimum/maximum measurements.
+   - Uses Indian monitoring-station/state geography. The source has no district identifiers and is not merged into the district risk score.
+
+7. **Disease & Environmental Analysis**
+   - Summarizes records, represented countries and years, and average diarrheal, cholera, and typhoid cases per 100,000 people.
+   - Filters by country, region, year, and water-source type; all charts and the data table update together.
+   - Compares disease cases, country averages, clean-water access, sanitation coverage, contaminant levels, and yearly averages.
+   - Uses country/region records, not Indian district records; it is a separate analysis and does not validate or change the district risk score.
+
 The sidebar can be closed with its **×** button. A slim tab appears at the left edge; hover over it to reveal the sidebar again. The header toggle also hides or restores navigation.
 
 ## Data used and how it is combined
@@ -55,6 +68,8 @@ The default data source is bundled with the project; the application does **not*
 | --- | --- |
 | [`Backend/india-districts-census-2011.csv`](Backend/india-districts-census-2011.csv) | Census district code, state, district, population, household count, households with an on-premises latrine, and households reporting tap water or tubewell/borehole as their main drinking-water source. |
 | [`Backend/NFHS_5_India_Districts_Factsheet_Data.xls`](Backend/NFHS_5_India_Districts_Factsheet_Data.xls) | State and district names, percentage of the population living in households with an improved drinking-water source, and percentage living in households using an improved sanitation facility. |
+| [`Backend/Water_pond_tanks_2021.csv`](Backend/Water_pond_tanks_2021.csv) | 620 Indian monitoring-station records with water-body type, state, and minimum/maximum water-quality measurements. |
+| [`Backend/water_pollution_disease.csv`](Backend/water_pollution_disease.csv) | 3,000 country/region/year environmental and disease-indicator records. |
 
 The repository reads **640 Census district records** and attempts to match NFHS-5 records by both state and district. Matching normalizes capitalization and punctuation and accounts for known spelling variants. The current bundled files produce **618 matches**. NFHS values are applied only when both geographic keys match; the remaining records keep their Census-derived values. District-name-only matching is deliberately avoided because district names can repeat across states.
 
@@ -69,7 +84,11 @@ The sources use different definitions and populations:
 
 These values are shown for context, but differences between them are **not** a like-for-like change over time.
 
-Maven packages the two source files into the application resources so they can be loaded at runtime without relying on the current working directory.
+The water-quality and country/region disease datasets are independent analytical modules. The monitoring CSV contains state and station names but no district key; the disease CSV contains country and region but no Indian district identifiers. The application does not invent geographic matches, merge either dataset into the district risk calculation, or treat country-level records as district-level evidence.
+
+The high-coliform card counts filtered stations whose average fecal or total coliform is at or above the 75th percentile for that measure across the full water-quality dataset. Numeric summaries and chart aggregates are calculated from available parsed values; empty or invalid numeric cells are excluded from that measure's average.
+
+Maven packages all four source files into application resources so they can be loaded at runtime without relying on the current working directory. CSV loading handles quoted commas and multiline fields; the water-quality file's Windows-1252 encoding is detected and supported.
 
 ## Parameters and risk-score calculation
 
@@ -112,7 +131,7 @@ The weights and thresholds are project-defined prioritization rules. They are no
 
 ```text
 .
-├── Backend/                         # Bundled Census CSV and NFHS-5 workbook
+├── Backend/                         # Four bundled Census, NFHS-5, water-quality, and disease datasets
 ├── database/
 │   └── schema.sql                   # Optional MySQL schema and seed data
 ├── documentation/                   # Project reports and documentation
@@ -120,9 +139,9 @@ The weights and thresholds are project-defined prioritization rules. They are no
 │   ├── algorithm/                   # Risk calculation and ranking algorithms
 │   ├── config/                      # Data-source selection and wiring
 │   ├── controller/                  # JavaFX screen controllers
-│   ├── model/                       # District and risk-statistics models
-│   ├── repository/                  # Census/NFHS and MySQL data access
-│   ├── service/                     # District service layer
+│   ├── model/                       # District, station, disease, and statistics models
+│   ├── repository/                  # Census/NFHS, analysis CSV, and MySQL data access
+│   ├── service/                     # District and independent analysis services
 │   └── util/                        # Formatting and UI helpers
 └── src/main/resources/
     ├── css/                         # Application styling

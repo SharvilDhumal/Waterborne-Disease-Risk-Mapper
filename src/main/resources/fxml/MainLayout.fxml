@@ -45,6 +45,8 @@
                 <Button fx:id="btnRanking" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showRiskRanking" styleClass="nav-button" text="🏆   Risk Ranking" />
                 <Button fx:id="btnVisualization" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDataVisualization" styleClass="nav-button" text="📈   Data Visualization" />
                 <Button fx:id="btnDataTable" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDataTable" styleClass="nav-button" text="📋   District Data Table" />
+                <Button fx:id="btnWaterQuality" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showWaterQuality" styleClass="nav-button" text="💧   Water Quality Analysis" wrapText="true" />
+                <Button fx:id="btnDiseaseAnalysis" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDiseaseAnalysis" styleClass="nav-button" text="🧪   Disease &amp; Environmental Analysis" wrapText="true" />
 
                 <Region VBox.vgrow="ALWAYS" />
 
