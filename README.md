@@ -6,6 +6,7 @@ A JavaFX desktop application for exploring district-level water, sanitation, and
 
 ## Contents
 
+- [Project guide](documentation/PROJECT_GUIDE.md)
 - [What the application does](#what-the-application-does)
 - [Data used and how it is combined](#data-used-and-how-it-is-combined)
 - [Parameters and risk-score calculation](#parameters-and-risk-score-calculation)
@@ -18,7 +19,9 @@ A JavaFX desktop application for exploring district-level water, sanitation, and
 
 ## What the application does
 
-The application provides seven screens, available from the navigation sidebar:
+The project implements seven screen views. Five are available from the
+navigation sidebar; the District Data Table and Risk Ranking views are
+implemented but are not currently connected to a sidebar button:
 
 1. **Dashboard Overview**
    - Shows the number of districts and counts in the high-, moderate-, and low-risk categories.
