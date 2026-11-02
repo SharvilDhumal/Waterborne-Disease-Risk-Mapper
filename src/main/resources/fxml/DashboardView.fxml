@@ -6,162 +6,242 @@
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.waterborne.controller.DashboardController">
+<ScrollPane fitToWidth="true" styleClass="page-scroll"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.waterborne.controller.DashboardController">
     <content>
-        <VBox spacing="20.0">
+        <VBox spacing="18.0" styleClass="page-body">
             <padding>
-                <Insets bottom="20.0" left="10.0" right="10.0" top="10.0" />
+                <Insets bottom="8.0" left="0.0" right="0.0" top="0.0" />
             </padding>
             <children>
-                <!-- OVERVIEW KPI CARDS -->
-                <HBox spacing="15.0">
+
+                <!-- ===== PAGE HEADER ===== -->
+                <VBox spacing="6.0" styleClass="page-header">
                     <children>
-                        <!-- TOTAL DISTRICTS CARD -->
-                        <VBox HBox.hgrow="ALWAYS" styleClass="metric-card" spacing="8.0">
+                        <Label styleClass="page-eyebrow" text="DISTRICT INTELLIGENCE" />
+                        <Label styleClass="page-title" text="Dashboard Overview" />
+                        <Label styleClass="page-subtitle"
+                               text="A district-level view of water, sanitation, and population indicators across India."
+                               wrapText="true" />
+                        <Label styleClass="dataset-chip"
+                               text="Census 2011 + matched NFHS-5 metrics"
+                               wrapText="true" />
+                    </children>
+                </VBox>
+
+                <!-- ===== KPI CARDS ===== -->
+                <HBox spacing="14.0">
+                    <children>
+
+                        <!-- TOTAL DISTRICTS -->
+                        <VBox HBox.hgrow="ALWAYS" styleClass="kpi-card" spacing="6.0">
                             <children>
-                                <Label styleClass="metric-title" text="TOTAL DISTRICTS" />
-                                <Label fx:id="totalDistrictsLabel" styleClass="metric-value" text="0" />
-                                <Label styleClass="metric-subtext" text="Monitored in system" />
+                                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                    <children>
+                                        <Region styleClass="kpi-accent-neutral" />
+                                        <Label styleClass="kpi-label" text="TOTAL DISTRICTS" />
+                                    </children>
+                                </HBox>
+                                <Label fx:id="totalDistrictsLabel" styleClass="kpi-value" text="0" />
+                                <Label styleClass="kpi-caption" text="Districts in the current dataset" />
                             </children>
                         </VBox>
 
-                        <!-- HIGH RISK CARD -->
-                        <VBox HBox.hgrow="ALWAYS" styleClass="metric-card" spacing="8.0">
+                        <!-- HIGH RISK -->
+                        <VBox HBox.hgrow="ALWAYS" styleClass="kpi-card" spacing="6.0">
                             <children>
-                                <HBox alignment="CENTER_LEFT">
+                                <HBox alignment="CENTER_LEFT" spacing="8.0">
                                     <children>
-                                        <Label styleClass="metric-title" text="HIGH RISK" />
-                                        <Region HBox.hgrow="ALWAYS" />
-                                        <Label styleClass="badge, badge-high" text="HIGH" />
+                                        <Region styleClass="kpi-accent-high" />
+                                        <Label styleClass="kpi-label" text="HIGH RISK" />
                                     </children>
                                 </HBox>
-                                <Label fx:id="highRiskLabel" styleClass="metric-value" text="0" textFill="#ef4444" />
-                                <Label styleClass="metric-subtext" text="Immediate attention required" />
+                                <Label fx:id="highRiskLabel" styleClass="kpi-value kpi-value-high" text="0" />
+                                <Label styleClass="kpi-caption" text="Requires priority monitoring" />
                             </children>
                         </VBox>
 
-                        <!-- MODERATE RISK CARD -->
-                        <VBox HBox.hgrow="ALWAYS" styleClass="metric-card" spacing="8.0">
+                        <!-- MODERATE RISK -->
+                        <VBox HBox.hgrow="ALWAYS" styleClass="kpi-card" spacing="6.0">
                             <children>
-                                <HBox alignment="CENTER_LEFT">
+                                <HBox alignment="CENTER_LEFT" spacing="8.0">
                                     <children>
-                                        <Label styleClass="metric-title" text="MODERATE RISK" />
-                                        <Region HBox.hgrow="ALWAYS" />
-                                        <Label styleClass="badge, badge-moderate" text="MODERATE" />
+                                        <Region styleClass="kpi-accent-moderate" />
+                                        <Label styleClass="kpi-label" text="MODERATE RISK" />
                                     </children>
                                 </HBox>
-                                <Label fx:id="moderateRiskLabel" styleClass="metric-value" text="0" textFill="#f59e0b" />
-                                <Label styleClass="metric-subtext" text="Monitoring &amp; planning" />
+                                <Label fx:id="moderateRiskLabel" styleClass="kpi-value kpi-value-moderate" text="0" />
+                                <Label styleClass="kpi-caption" text="Monitoring and planning" />
                             </children>
                         </VBox>
 
-                        <!-- LOW RISK CARD -->
-                        <VBox HBox.hgrow="ALWAYS" styleClass="metric-card" spacing="8.0">
+                        <!-- LOW RISK -->
+                        <VBox HBox.hgrow="ALWAYS" styleClass="kpi-card" spacing="6.0">
                             <children>
-                                <HBox alignment="CENTER_LEFT">
+                                <HBox alignment="CENTER_LEFT" spacing="8.0">
                                     <children>
-                                        <Label styleClass="metric-title" text="LOW RISK" />
-                                        <Region HBox.hgrow="ALWAYS" />
-                                        <Label styleClass="badge, badge-low" text="LOW" />
+                                        <Region styleClass="kpi-accent-low" />
+                                        <Label styleClass="kpi-label" text="LOW RISK" />
                                     </children>
                                 </HBox>
-                                <Label fx:id="lowRiskLabel" styleClass="metric-value" text="0" textFill="#10b981" />
-                                <Label styleClass="metric-subtext" text="Stable water &amp; sanitation" />
+                                <Label fx:id="lowRiskLabel" styleClass="kpi-value kpi-value-low" text="0" />
+                                <Label styleClass="kpi-caption" text="Lower relative risk under current model" />
                             </children>
                         </VBox>
+
                     </children>
                 </HBox>
 
-                <!-- MIDDLE SECTION: SPOTLIGHT & STATS -->
-                <HBox spacing="15.0">
+                <!-- ===== SPOTLIGHT + AVERAGE ===== -->
+                <HBox spacing="14.0">
                     <children>
-                        <!-- HIGHEST RISK SPOTLIGHT CARD -->
-                        <VBox HBox.hgrow="ALWAYS" styleClass="content-panel" spacing="12.0">
+
+                        <!-- HIGHEST RISK SPOTLIGHT -->
+                        <VBox HBox.hgrow="ALWAYS" styleClass="surface-card" spacing="12.0">
                             <children>
-                                <Label styleClass="panel-heading" text="⚠️ Highest Risk District Spotlight" />
-                                <HBox alignment="CENTER_LEFT" spacing="15.0">
+                                <Label styleClass="section-title" text="Highest Risk District" />
+                                <HBox alignment="CENTER_LEFT" spacing="14.0">
                                     <children>
-                                        <VBox spacing="4.0">
+                                        <VBox spacing="2.0">
                                             <children>
-                                                <Label fx:id="spotlightNameLabel" style="-fx-font-size: 22px; -fx-font-weight: bold;" text="—" />
-                                                <Label fx:id="spotlightScoreLabel" style="-fx-font-size: 14px; -fx-text-fill: #EF4444; -fx-font-weight: bold;" text="Score: — / 100" />
+                                                <Label fx:id="spotlightNameLabel" styleClass="spotlight-name"
+                                                       text="—" wrapText="true" />
+                                                <Label fx:id="spotlightStateLabel" styleClass="spotlight-state" text="—" />
+                                                <Label fx:id="spotlightScoreLabel" styleClass="spotlight-score" text="Score: — / 100" />
                                             </children>
                                         </VBox>
                                         <Region HBox.hgrow="ALWAYS" />
                                         <Label fx:id="spotlightBadgeLabel" styleClass="badge, badge-high" text="HIGH RISK" />
                                     </children>
                                 </HBox>
-                                <HBox spacing="20.0" style="-fx-background-color: #F8FAFC; -fx-padding: 12px; -fx-background-radius: 8px;">
+
+                                <!-- CONTRIBUTING INDICATORS -->
+                                <VBox spacing="8.0" styleClass="spotlight-metrics">
                                     <children>
-                                        <VBox HBox.hgrow="ALWAYS">
+                                        <VBox spacing="3.0">
                                             <children>
-                                                <Label styleClass="metric-subtext" text="Water Risk Deficit" />
-                                                <Label fx:id="spotlightScarcityLabel" style="-fx-font-weight: bold;" text="—" />
+                                                <HBox>
+                                                    <children>
+                                                        <Label styleClass="indicator-label" text="Water-risk deficit" />
+                                                        <Region HBox.hgrow="ALWAYS" />
+                                                        <Label fx:id="spotlightScarcityLabel" styleClass="indicator-value" text="—" />
+                                                    </children>
+                                                </HBox>
+                                                <ProgressBar fx:id="spotlightScarcityBar" progress="0.0"
+                                                             styleClass="spotlight-progress, kpi-bar-high" />
                                             </children>
                                         </VBox>
-                                        <VBox HBox.hgrow="ALWAYS">
+                                        <VBox spacing="3.0">
                                             <children>
-                                                <Label styleClass="metric-subtext" text="Sanitation" />
-                                                <Label fx:id="spotlightSanitationLabel" style="-fx-font-weight: bold;" text="—" />
+                                                <HBox>
+                                                    <children>
+                                                        <Label styleClass="indicator-label" text="Sanitation deficit" />
+                                                        <Region HBox.hgrow="ALWAYS" />
+                                                        <Label fx:id="spotlightSanitationDeficitLabel" styleClass="indicator-value" text="—" />
+                                                    </children>
+                                                </HBox>
+                                                <ProgressBar fx:id="spotlightSanitationBar" progress="0.0"
+                                                             styleClass="spotlight-progress, kpi-bar-moderate" />
                                             </children>
                                         </VBox>
-                                        <VBox HBox.hgrow="ALWAYS">
+                                        <HBox spacing="6.0" alignment="CENTER_LEFT">
                                             <children>
-                                                <Label styleClass="metric-subtext" text="Population" />
-                                                <Label fx:id="spotlightPopulationLabel" style="-fx-font-weight: bold;" text="—" />
+                                                <Label styleClass="indicator-label" text="Population" />
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <Label fx:id="spotlightPopulationLabel" styleClass="indicator-value" text="—" />
                                             </children>
-                                        </VBox>
+                                        </HBox>
                                     </children>
-                                </HBox>
+                                </VBox>
                             </children>
                         </VBox>
 
-                        <!-- AVERAGE RISK SCORE CARD -->
-                        <VBox prefWidth="320.0" styleClass="content-panel" spacing="12.0" alignment="CENTER">
+                        <!-- AVERAGE RISK SCORE -->
+                        <VBox prefWidth="280.0" minWidth="210.0" styleClass="average-score-card"
+                              spacing="6.0" alignment="CENTER_LEFT">
                             <children>
-                                <Label styleClass="metric-title" text="AVERAGE RISK SCORE" />
-                                <Label fx:id="avgScoreLabel" style="-fx-font-size: 42px; -fx-font-weight: bold; -fx-text-fill: #0284C7;" text="0.0" />
-                                <Label styleClass="metric-subtext" text="Overall mean across all districts (Scale 0 - 100)" textAlignment="CENTER" wrapText="true" />
+                                <Label styleClass="kpi-label" text="AVERAGE RISK SCORE" />
+                                <Label fx:id="avgScoreLabel" styleClass="avg-value" text="0.0" />
+                                <Label styleClass="kpi-caption"
+                                       text="Mean composite score across all districts (0–100)" wrapText="true" />
                             </children>
                         </VBox>
+
                     </children>
                 </HBox>
 
-                <!-- CHARTS SECTION -->
-                <HBox spacing="15.0">
+                <!-- ===== MAIN CHARTS: TOP 10 + DONUT ===== -->
+                <HBox spacing="14.0">
                     <children>
-                        <!-- DISTRICT COMPARISON BAR CHART -->
-                        <VBox HBox.hgrow="ALWAYS" styleClass="content-panel" spacing="10.0">
+
+                        <!-- TOP 10 RISK BARS -->
+                        <VBox HBox.hgrow="ALWAYS" styleClass="surface-card" spacing="8.0">
                             <children>
-                                <Label styleClass="panel-heading" text="Water and Sanitation Deficits — Top 10 Risk Districts" />
-                                <Label styleClass="metric-subtext" text="Water deficit = 100 − improved-water access; sanitation deficit = 100 − sanitation coverage. Values use the active source; combined source uses NFHS-5 where matched and Census household proxies otherwise." wrapText="true" />
-                                <BarChart fx:id="riskBarChart" animated="false" legendVisible="true" prefHeight="280.0">
+                                <Label styleClass="section-title" text="Top Districts by Composite Score" />
+                                <Label styleClass="section-caption"
+                                       text="Top 10 highest composite risk scores (0–100), sorted descending."
+                                       wrapText="true" />
+                                <BarChart fx:id="riskBarChart" animated="false" legendVisible="false"
+                                          categoryGap="6.0" barGap="2.0" prefHeight="380.0"
+                                          styleClass="analytics-chart">
                                     <xAxis>
-                                        <CategoryAxis label="District (State/UT)" />
+                                        <NumberAxis label="Composite Risk Score (0–100)" lowerBound="0.0" upperBound="100.0"
+                                                    autoRanging="false" tickUnit="20.0" />
                                     </xAxis>
                                     <yAxis>
-                                        <NumberAxis label="Deficit (%)" lowerBound="0.0" upperBound="100.0" autoRanging="false" tickUnit="20.0" />
+                                        <CategoryAxis />
                                     </yAxis>
                                 </BarChart>
                             </children>
                         </VBox>
 
-                        <!-- RISK CATEGORY DISTRIBUTION PIE CHART -->
-                        <VBox prefWidth="380.0" styleClass="content-panel" spacing="10.0">
+                        <!-- DONUT / PIE -->
+                        <VBox prefWidth="340.0" minWidth="260.0" styleClass="surface-card" spacing="8.0">
                             <children>
-                                <Label styleClass="panel-heading" text="Calculated Risk Score Categories" />
-                                <PieChart fx:id="riskPieChart" animated="false" prefHeight="280.0" />
+                                <Label styleClass="section-title" text="Risk Category Distribution" />
+                                <Label styleClass="section-caption"
+                                       text="District counts by composite risk category." wrapText="true" />
+                                <PieChart fx:id="riskPieChart" animated="false" prefHeight="380.0"
+                                          labelsVisible="true" legendSide="BOTTOM" />
                             </children>
                         </VBox>
+
                     </children>
                 </HBox>
+
+                <!-- ===== WATER VS SANITATION DEFICIT ===== -->
+                <VBox styleClass="surface-card" spacing="8.0">
+                    <children>
+                        <Label styleClass="section-title" text="Water Deficit vs Sanitation Deficit" />
+                        <Label styleClass="section-caption"
+                               text="Comparison of the two primary deficit indicators for the top 10 risk districts. Water deficit = 100 − improved-water access; sanitation deficit = 100 − sanitation coverage."
+                               wrapText="true" />
+                        <BarChart fx:id="deficitBarChart" animated="false" legendVisible="true" legendSide="BOTTOM"
+                                  categoryGap="8.0" barGap="2.0" prefHeight="440.0"
+                                  styleClass="analytics-chart">
+                            <xAxis>
+                                <NumberAxis label="Deficit Level (% Households Lacking Access)" lowerBound="0.0" upperBound="100.0"
+                                            autoRanging="false" tickUnit="20.0" />
+                            </xAxis>
+                            <yAxis>
+                                <CategoryAxis />
+                            </yAxis>
+                        </BarChart>
+                    </children>
+                </VBox>
+
+                <Label styleClass="analysis-disclaimer"
+                       text="The composite score is a comparative indicator based on available district-level inputs. It is not a measured disease count or clinical prediction."
+                       wrapText="true" />
+
             </children>
         </VBox>
     </content>

@@ -1,115 +1,196 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox spacing="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.waterborne.controller.DistrictExplorerController">
-    <children>
-        <!-- LEFT SIDE: DISTRICT LIST & SEARCH -->
-        <VBox minWidth="280.0" prefWidth="310.0" maxWidth="340.0" spacing="12.0" styleClass="content-panel">
-            <children>
-                <Label styleClass="panel-heading" text="Select District" />
-                <TextField fx:id="searchField" promptText="🔍  Search district..." styleClass="search-field" />
-                <ListView fx:id="districtListView" VBox.vgrow="ALWAYS" />
-            </children>
-        </VBox>
-
-        <!-- RIGHT SIDE: DISTRICT PROFILE INSPECTOR -->
-        <VBox minWidth="0.0" HBox.hgrow="ALWAYS" spacing="18.0" styleClass="content-panel">
+<ScrollPane fitToWidth="true" styleClass="page-scroll"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.waterborne.controller.DistrictExplorerController">
+    <content>
+        <VBox spacing="16.0" styleClass="page-body">
             <padding>
-                <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+                <Insets bottom="8.0" left="0.0" right="0.0" top="0.0" />
             </padding>
             <children>
-                <!-- HEADER CARD -->
-                <HBox alignment="CENTER_LEFT" spacing="15.0">
+                <VBox spacing="4.0" styleClass="page-header">
                     <children>
-                        <VBox spacing="4.0">
+                        <Label styleClass="page-title" text="District Explorer" />
+                        <Label styleClass="page-subtitle"
+                               text="Search district-level indicators, compare source measures, and inspect how the composite score is composed."
+                               wrapText="true" />
+                    </children>
+                </VBox>
+
+                <HBox spacing="16.0" alignment="TOP_LEFT">
+                    <children>
+                        <VBox minWidth="245.0" prefWidth="265.0" maxWidth="290.0"
+                              spacing="12.0" styleClass="surface-card explorer-selection">
                             <children>
-                                <Label fx:id="districtNameLabel" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #0F172A;" text="Select a District" />
-                                <Label fx:id="riskScoreLabel" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0284C7;" text="Score: — / 100" />
+                                <VBox spacing="3.0">
+                                    <children>
+                                        <Label styleClass="section-title" text="Find a district" />
+                                        <Label styleClass="section-caption"
+                                               text="Search by district or state name." wrapText="true" />
+                                    </children>
+                                </VBox>
+                                <TextField fx:id="searchField" promptText="Search districts…"
+                                           styleClass="search-field" />
+                                <HBox alignment="CENTER_LEFT" spacing="6.0" styleClass="district-count-chip">
+                                    <children>
+                                        <Region styleClass="kpi-accent-neutral" />
+                                        <Label fx:id="districtCountLabel" styleClass="section-caption"
+                                               text="Loading districts…" />
+                                    </children>
+                                </HBox>
+                                <ListView fx:id="districtListView" prefHeight="520.0"
+                                          styleClass="district-list" VBox.vgrow="ALWAYS" />
                             </children>
                         </VBox>
-                        <Region HBox.hgrow="ALWAYS" />
-                        <Label fx:id="riskBadgeLabel" styleClass="badge, badge-low" text="—" />
+
+                        <VBox minWidth="0.0" spacing="14.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <VBox spacing="12.0" styleClass="profile-hero">
+                                    <children>
+                                        <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                            <children>
+                                                <VBox spacing="4.0">
+                                                    <children>
+                                                        <Label styleClass="profile-eyebrow"
+                                                               text="SELECTED DISTRICT" />
+                                                        <Label fx:id="districtNameLabel"
+                                                               styleClass="profile-name"
+                                                               text="Select a district" wrapText="true" />
+                                                        <Label fx:id="districtStateLabel"
+                                                               styleClass="profile-state" text="—"
+                                                               wrapText="true" />
+                                                    </children>
+                                                </VBox>
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <Label fx:id="riskBadgeLabel"
+                                                       styleClass="badge, badge-low" text="—" />
+                                            </children>
+                                        </HBox>
+                                        <HBox alignment="CENTER_LEFT" spacing="8.0"
+                                              styleClass="profile-score-row">
+                                            <children>
+                                                <Label styleClass="profile-score-caption"
+                                                       text="Composite indicator score" />
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <Label fx:id="riskScoreLabel" styleClass="profile-score"
+                                                       text="— / 100" />
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </VBox>
+
+                                <HBox spacing="10.0" styleClass="indicator-card-row">
+                                    <children>
+                                        <VBox HBox.hgrow="ALWAYS" styleClass="indicator-card" spacing="7.0">
+                                            <children>
+                                                <Label styleClass="kpi-label" text="WATER-RISK DEFICIT" />
+                                                <Label fx:id="scarcityValueLabel"
+                                                       styleClass="indicator-card-value indicator-water-value"
+                                                       text="—" />
+                                                <Label styleClass="kpi-caption" text="100 − improved-water access"
+                                                       wrapText="true" />
+                                                <ProgressBar fx:id="waterProgressBar"
+                                                             progress="0.0"
+                                                             styleClass="indicator-progress, progress-water" />
+                                            </children>
+                                        </VBox>
+                                        <VBox HBox.hgrow="ALWAYS" styleClass="indicator-card" spacing="7.0">
+                                            <children>
+                                                <Label styleClass="kpi-label" text="SANITATION COVERAGE" />
+                                                <Label fx:id="sanitationValueLabel"
+                                                       styleClass="indicator-card-value indicator-sanitation-value"
+                                                       text="—" />
+                                                <Label styleClass="kpi-caption" text="Share with improved sanitation"
+                                                       wrapText="true" />
+                                                <ProgressBar fx:id="sanitationProgressBar"
+                                                             progress="0.0"
+                                                             styleClass="indicator-progress, progress-sanitation" />
+                                            </children>
+                                        </VBox>
+                                        <VBox HBox.hgrow="ALWAYS" styleClass="indicator-card" spacing="7.0">
+                                            <children>
+                                                <Label styleClass="kpi-label" text="POPULATION DENSITY" />
+                                                <Label fx:id="densityValueLabel"
+                                                       styleClass="indicator-card-value indicator-density-value"
+                                                       text="—" />
+                                                <Label styleClass="kpi-caption" text="Residents per km²"
+                                                       wrapText="true" />
+                                                <ProgressBar fx:id="densityProgressBar"
+                                                             progress="0.0"
+                                                             styleClass="indicator-progress, progress-density" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+
+                                <VBox styleClass="surface-card" spacing="8.0">
+                                    <children>
+                                        <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                            <children>
+                                                <Label styleClass="section-title"
+                                                       text="Score contribution" />
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <Label styleClass="chart-unit-chip"
+                                                       text="Weighted points" />
+                                            </children>
+                                        </HBox>
+                                        <Label styleClass="section-caption"
+                                               text="Each bar shows the weighted points contributed by one component; the weights remain water 45%, sanitation 35%, and density 20%."
+                                               wrapText="true" />
+                                        <BarChart fx:id="contributionChart" animated="false"
+                                                  legendVisible="false" prefHeight="205.0"
+                                                  categoryGap="12.0" barGap="2.0">
+                                            <xAxis>
+                                                <NumberAxis lowerBound="0.0" upperBound="45.0"
+                                                            autoRanging="false" tickUnit="5.0" />
+                                            </xAxis>
+                                            <yAxis>
+                                                <CategoryAxis />
+                                            </yAxis>
+                                        </BarChart>
+                                    </children>
+                                </VBox>
+
+                                <!-- DISTRICT INSIGHT FULL-WIDTH CARD -->
+                                <VBox styleClass="interpretation-card" spacing="8.0">
+                                    <children>
+                                        <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                            <children>
+                                                <Label styleClass="section-title" text="District Insight &amp; Summary" />
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <Label styleClass="chart-unit-chip" text="Analytical Synthesis" />
+                                            </children>
+                                        </HBox>
+                                        <Label fx:id="interpretationLabel" wrapText="true"
+                                               styleClass="interpretation-text"
+                                               text="Select a district to view its indicator summary." />
+                                    </children>
+                                </VBox>
+
+                                <Label styleClass="analysis-disclaimer"
+                                       text="This score is a comparative indicator built from available water, sanitation, and density measures. It is not a measured disease count or clinical prediction."
+                                       wrapText="true" />
+                            </children>
+                        </VBox>
                     </children>
                 </HBox>
-
-                <!-- RISK FACTORS BREAKDOWN -->
-                <VBox spacing="14.0" style="-fx-background-color: #F8FAFC; -fx-padding: 18px; -fx-background-radius: 10px;">
-                    <children>
-                        <Label styleClass="metric-title" text="RISK CONTRIBUTING FACTORS" />
-
-                        <!-- WATER SCARCITY -->
-                        <VBox spacing="4.0">
-                            <children>
-                                <HBox alignment="CENTER_LEFT">
-                                    <children>
-                                        <Label style="-fx-font-weight: 500;" text="Water Risk Deficit (NFHS where matched)" />
-                                        <Region HBox.hgrow="ALWAYS" />
-                                        <Label fx:id="scarcityValueLabel" style="-fx-font-weight: bold;" text="0.0%" />
-                                    </children>
-                                </HBox>
-                                <ProgressBar fx:id="scarcityProgressBar" maxWidth="1.7976931348623157E308" progress="0.0" style="-fx-accent: #EF4444;" />
-                            </children>
-                        </VBox>
-
-                        <!-- SANITATION COVERAGE -->
-                        <VBox spacing="4.0">
-                            <children>
-                                <HBox alignment="CENTER_LEFT">
-                                    <children>
-                                        <Label style="-fx-font-weight: 500;" text="Sanitation Coverage (NFHS where matched)" />
-                                        <Region HBox.hgrow="ALWAYS" />
-                                        <Label fx:id="sanitationValueLabel" style="-fx-font-weight: bold;" text="0.0%" />
-                                    </children>
-                                </HBox>
-                                <ProgressBar fx:id="sanitationProgressBar" maxWidth="1.7976931348623157E308" progress="0.0" style="-fx-accent: #F59E0B;" />
-                            </children>
-                        </VBox>
-
-                        <!-- POPULATION DENSITY -->
-                        <VBox spacing="4.0">
-                            <children>
-                                <HBox alignment="CENTER_LEFT">
-                                    <children>
-                                        <Label style="-fx-font-weight: 500;" text="Population Density" />
-                                        <Region HBox.hgrow="ALWAYS" />
-                                        <Label fx:id="densityValueLabel" style="-fx-font-weight: bold;" text="0 / km²" />
-                                    </children>
-                                </HBox>
-                                <ProgressBar fx:id="densityProgressBar" maxWidth="1.7976931348623157E308" progress="0.0" style="-fx-accent: #0284C7;" />
-                            </children>
-                        </VBox>
-
-                        <Label fx:id="sourceComparisonLabel" wrapText="true" styleClass="metric-subtext" text="Census 2011 and NFHS-5 comparison will appear for the selected district." />
-
-                        <!-- TOTAL POPULATION -->
-                        <HBox alignment="CENTER_LEFT" style="-fx-padding: 8px 0 0 0;">
-                            <children>
-                                <Label styleClass="metric-subtext" text="Total Population:" />
-                                <Region HBox.hgrow="ALWAYS" />
-                                <Label fx:id="populationValueLabel" style="-fx-font-weight: bold; -fx-font-size: 14px;" text="—" />
-                            </children>
-                        </HBox>
-                    </children>
-                </VBox>
-
-                <!-- AUTOMATED RISK INTERPRETATION SUMMARY -->
-                <VBox spacing="8.0">
-                    <children>
-                        <Label styleClass="panel-heading" text="Automated Risk Interpretation" />
-                        <Label fx:id="interpretationLabel" wrapText="true" style="-fx-font-size: 13px; -fx-text-fill: #475569; -fx-line-spacing: 4px;" text="Select a district from the left list to view detailed risk analysis and factor breakdown." />
-                    </children>
-                </VBox>
             </children>
         </VBox>
-    </children>
-</HBox>
+    </content>
+</ScrollPane>

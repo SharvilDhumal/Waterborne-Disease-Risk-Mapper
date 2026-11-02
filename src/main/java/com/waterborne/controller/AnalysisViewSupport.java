@@ -102,6 +102,7 @@ final class AnalysisViewSupport {
         chart.setLegendVisible(false);
         chart.setCategoryGap(8);
         chart.setPrefHeight(300);
+        chart.getStyleClass().add("analytics-chart");
         return chart;
     }
 
@@ -115,6 +116,7 @@ final class AnalysisViewSupport {
         chart.setAnimated(false);
         chart.setCreateSymbols(false);
         chart.setPrefHeight(300);
+        chart.getStyleClass().add("analytics-chart");
         return chart;
     }
 
@@ -126,6 +128,7 @@ final class AnalysisViewSupport {
         ScatterChart<Number, Number> chart = new ScatterChart<>(xAxis, yAxis);
         chart.setAnimated(false);
         chart.setPrefHeight(300);
+        chart.getStyleClass().add("analytics-chart");
         return chart;
     }
 
@@ -133,6 +136,7 @@ final class AnalysisViewSupport {
         PieChart chart = new PieChart();
         chart.setAnimated(false);
         chart.setPrefHeight(300);
+        chart.getStyleClass().add("analytics-chart");
         return chart;
     }
 

@@ -38,9 +38,7 @@ public class MainLayoutController implements Initializable {
 
     @FXML private Button btnDashboard;
     @FXML private Button btnExplorer;
-    @FXML private Button btnRanking;
     @FXML private Button btnVisualization;
-    @FXML private Button btnDataTable;
     @FXML private Button btnWaterQuality;
     @FXML private Button btnDiseaseAnalysis;
 
@@ -103,11 +101,6 @@ public class MainLayoutController implements Initializable {
         loadView("/fxml/DistrictExplorerView.fxml");
     }
 
-    @FXML
-    public void showRiskRanking(ActionEvent event) {
-        setActiveButton(btnRanking, "Risk Level Leaderboard & Ranking");
-        loadView("/fxml/RiskRankingView.fxml");
-    }
 
     @FXML
     public void showDataVisualization(ActionEvent event) {
@@ -115,11 +108,6 @@ public class MainLayoutController implements Initializable {
         loadView("/fxml/DataVisualizationView.fxml");
     }
 
-    @FXML
-    public void showDataTable(ActionEvent event) {
-        setActiveButton(btnDataTable, "District Risk Data Table");
-        loadView("/fxml/DataTableView.fxml");
-    }
 
     @FXML
     public void showWaterQuality(ActionEvent event) {
@@ -138,9 +126,7 @@ public class MainLayoutController implements Initializable {
         viewCache.clear(); // Clear cached views on manual refresh
         if (currentActiveButton == btnDashboard) showDashboard(null);
         else if (currentActiveButton == btnExplorer) showDistrictExplorer(null);
-        else if (currentActiveButton == btnRanking) showRiskRanking(null);
         else if (currentActiveButton == btnVisualization) showDataVisualization(null);
-        else if (currentActiveButton == btnDataTable) showDataTable(null);
         else if (currentActiveButton == btnWaterQuality) showWaterQuality(null);
         else if (currentActiveButton == btnDiseaseAnalysis) showDiseaseAnalysis(null);
     }

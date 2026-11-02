@@ -5,14 +5,23 @@ import com.waterborne.model.RiskLevel;
 import com.waterborne.service.DistrictService;
 import com.waterborne.util.AlertUtil;
 import com.waterborne.util.FormatUtil;
-import javafx.concurrent.Task;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -25,29 +34,30 @@ import java.util.ResourceBundle;
 
 /**
  * Controller for DistrictExplorerView.fxml.
- * Handles district search list, custom cell rendering, progress bars, and automated risk interpretation.
+ * Handles district search, list rendering, profile inspection,
+ * contribution chart, source comparison and automated interpretation.
  */
 public class DistrictExplorerController implements Initializable, BaseController {
 
     @FXML private TextField searchField;
     @FXML private ListView<District> districtListView;
+    @FXML private Label districtCountLabel;
 
     @FXML private Label districtNameLabel;
+    @FXML private Label districtStateLabel;
     @FXML private Label riskScoreLabel;
     @FXML private Label riskBadgeLabel;
 
     @FXML private Label scarcityValueLabel;
-    @FXML private ProgressBar scarcityProgressBar;
-
     @FXML private Label sanitationValueLabel;
-    @FXML private ProgressBar sanitationProgressBar;
-
     @FXML private Label densityValueLabel;
+    @FXML private ProgressBar waterProgressBar;
+    @FXML private ProgressBar sanitationProgressBar;
     @FXML private ProgressBar densityProgressBar;
 
-    @FXML private Label populationValueLabel;
+
+    @FXML private BarChart<Number, String> contributionChart;
     @FXML private Label interpretationLabel;
-    @FXML private Label sourceComparisonLabel;
 
     private DistrictService districtService;
     private final ObservableList<District> masterDistricts = FXCollections.observableArrayList();
@@ -57,6 +67,7 @@ public class DistrictExplorerController implements Initializable, BaseController
     public void initialize(URL location, ResourceBundle resources) {
         setupListView();
         setupSearchListener();
+        contributionChart.getStyleClass().add("analytics-chart");
     }
 
     @Override
@@ -66,7 +77,7 @@ public class DistrictExplorerController implements Initializable, BaseController
     }
 
     private void setupListView() {
-        filteredDistricts = new FilteredList<>(masterDistricts, district -> true);
+        filteredDistricts = new FilteredList<>(masterDistricts, d -> true);
         districtListView.setItems(filteredDistricts);
         districtListView.setCellFactory(param -> new ListCell<>() {
             @Override
@@ -77,15 +88,16 @@ public class DistrictExplorerController implements Initializable, BaseController
                     setGraphic(null);
                 } else {
                     Label name = new Label(item.getName());
+                    name.getStyleClass().add("district-cell-name");
                     name.setWrapText(true);
-                    name.setMaxWidth(190.0);
-                    name.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
+                    name.setMaxWidth(170.0);
 
-                    Label state = new Label(item.getState() == null ? "" : item.getState());
+                    Label state = new Label(item.getState() == null ? "—" : item.getState());
+                    state.getStyleClass().add("district-cell-state");
                     state.setWrapText(true);
-                    state.setMaxWidth(190.0);
-                    state.getStyleClass().add("metric-subtext");
-                    VBox districtLabels = new VBox(2.0, name, state);
+                    state.setMaxWidth(170.0);
+
+                    VBox text = new VBox(2.0, name, state);
 
                     Region spacer = new Region();
                     HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -97,7 +109,7 @@ public class DistrictExplorerController implements Initializable, BaseController
                     else if (item.getRiskLevel() == RiskLevel.MODERATE) badge.getStyleClass().add("badge-moderate");
                     else badge.getStyleClass().add("badge-low");
 
-                    HBox container = new HBox(8.0, districtLabels, spacer, badge);
+                    HBox container = new HBox(8.0, text, spacer, badge);
                     container.setAlignment(Pos.CENTER_LEFT);
                     container.setMaxWidth(Double.MAX_VALUE);
                     setGraphic(container);
@@ -105,15 +117,14 @@ public class DistrictExplorerController implements Initializable, BaseController
             }
         });
 
-        districtListView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                displayDistrictDetails(newSelection);
-            }
-        });
+        districtListView.getSelectionModel().selectedItemProperty()
+                .addListener((obs, oldSel, newSel) -> {
+                    if (newSel != null) displayDistrictDetails(newSel);
+                });
     }
 
     private void setupSearchListener() {
-        searchField.textProperty().addListener((obs, oldValue, newValue) -> applySearch(newValue));
+        searchField.textProperty().addListener((obs, oldV, newV) -> applySearch(newV));
     }
 
     private void loadDistricts() {
@@ -124,29 +135,36 @@ public class DistrictExplorerController implements Initializable, BaseController
                 return districtService.getAllDistricts();
             }
         };
-        task.setOnSucceeded(event -> {
+        task.setOnSucceeded(e -> {
             masterDistricts.setAll(task.getValue());
             applySearch(searchField.getText());
             if (!masterDistricts.isEmpty()) {
                 districtListView.getSelectionModel().selectFirst();
             }
         });
-        task.setOnFailed(event -> {
-            Throwable error = task.getException();
-            System.err.println("[ERROR] Failed to load districts: " + error.getMessage());
+        task.setOnFailed(e -> {
+            Throwable err = task.getException();
+            System.err.println("[ERROR] Failed to load districts: " + err.getMessage());
             AlertUtil.showError("Data Load Error", "Could Not Load Districts",
-                    "Unable to load district data: " + error.getMessage());
+                    "Unable to load district data: " + err.getMessage());
         });
 
-        Thread loader = new Thread(task, "district-explorer-data-loader");
-        loader.setDaemon(true);
-        loader.start();
+        Thread t = new Thread(task, "district-explorer-data-loader");
+        t.setDaemon(true);
+        t.start();
     }
 
-    private void applySearch(String searchText) {
-        String query = searchText == null ? "" : searchText.trim().toLowerCase(Locale.ROOT);
-        filteredDistricts.setPredicate(district ->
-                query.isEmpty() || district.getName().toLowerCase(Locale.ROOT).contains(query));
+    private void applySearch(String text) {
+        String query = text == null ? "" : text.trim().toLowerCase(Locale.ROOT);
+        filteredDistricts.setPredicate(d ->
+                query.isEmpty()
+                        || d.getName().toLowerCase(Locale.ROOT).contains(query)
+                        || (d.getState() != null
+                            && d.getState().toLowerCase(Locale.ROOT).contains(query)));
+
+        districtCountLabel.setText(filteredDistricts.size() + " of "
+                + masterDistricts.size() + " districts");
+
         if (!filteredDistricts.isEmpty()) {
             districtListView.getSelectionModel().selectFirst();
         } else {
@@ -158,7 +176,10 @@ public class DistrictExplorerController implements Initializable, BaseController
         if (district == null) return;
 
         districtNameLabel.setText(district.getName());
-        riskScoreLabel.setText("Score: " + FormatUtil.formatScore(district.getRiskScore()) + " / 100");
+        districtStateLabel.setText(district.getState() == null || district.getState().isBlank()
+                ? "State / UT not specified"
+                : district.getState());
+        riskScoreLabel.setText(FormatUtil.formatScore(district.getRiskScore()) + " / 100");
 
         RiskLevel level = district.getRiskLevel();
         riskBadgeLabel.setText(level.getLabel());
@@ -167,68 +188,97 @@ public class DistrictExplorerController implements Initializable, BaseController
         else if (level == RiskLevel.MODERATE) riskBadgeLabel.getStyleClass().add("badge-moderate");
         else riskBadgeLabel.getStyleClass().add("badge-low");
 
-        // Progress Bars & Labels
-        scarcityValueLabel.setText(FormatUtil.formatPercentage(district.getWaterScarcity()));
-        scarcityProgressBar.setProgress(district.getWaterScarcity() / 100.0);
-
+        // Indicator card values
+        double waterDeficit = district.getWaterScarcity();
+        double sanitationDeficit = 100.0 - district.getSanitationCoverage();
+        scarcityValueLabel.setText(FormatUtil.formatPercentage(waterDeficit));
         sanitationValueLabel.setText(FormatUtil.formatPercentage(district.getSanitationCoverage()));
-        sanitationProgressBar.setProgress(district.getSanitationCoverage() / 100.0);
-        updateSourceComparison(district);
-
         densityValueLabel.setText(FormatUtil.formatDensity(district.getPopulationDensity()));
-        double densityProgress = Math.min(1.0, district.getPopulationDensity() / 2000.0);
-        densityProgressBar.setProgress(densityProgress);
+        waterProgressBar.setProgress(clamp(waterDeficit / 100.0));
+        sanitationProgressBar.setProgress(clamp(district.getSanitationCoverage() / 100.0));
+        densityProgressBar.setProgress(clamp(district.getPopulationDensity() / 1500.0));
 
-        populationValueLabel.setText(FormatUtil.formatPopulation(district.getPopulation()) + " (" + String.format("%,d", district.getPopulation()) + " residents)");
+        // Contribution chart mirrors the existing formula and 1500 people/km² density cap.
+        updateContributionChart(waterDeficit, sanitationDeficit, district.getPopulationDensity());
 
-        // Automated Risk Interpretation Summary Generation
+
         interpretationLabel.setText(generateInterpretationText(district));
     }
 
-    private void updateSourceComparison(District district) {
-        if (!Double.isFinite(district.getCensusWaterScarcity())
-                || !Double.isFinite(district.getCensusSanitationCoverage())) {
-            sourceComparisonLabel.setText("Census 2011 comparison metrics are not available for this data source.");
-            return;
-        }
+    /**
+     * Mirrors the district's existing composite scoring: water 45%, sanitation 35%, density 20%.
+     * Density contribution is normalised to 0–100 by capping at 1500 people/km².
+     * This is a visualisation of the existing score, not a redefinition of it.
+     */
+    private void updateContributionChart(double waterDeficit, double sanitationDeficit,
+                                         double populationDensity) {
+        contributionChart.getData().clear();
 
-        String censusValues = "Census 2011 proxies: water deficit "
-                + FormatUtil.formatPercentage(district.getCensusWaterScarcity())
-                + ", on-premises latrine coverage "
-                + FormatUtil.formatPercentage(district.getCensusSanitationCoverage()) + ".";
-        if (!district.hasNfhs5Metrics()) {
-            sourceComparisonLabel.setText(censusValues
-                    + " No matched NFHS-5 district record; risk uses Census values.");
-            return;
-        }
+        double waterContribution = waterDeficit * 0.45;
+        double sanitationContribution = sanitationDeficit * 0.35;
+        double densityIndex = Math.min(100.0, populationDensity / 15.0); // 1500 -> 100
+        double densityContribution = densityIndex * 0.20;
 
-        sourceComparisonLabel.setText(censusValues + "\nNFHS-5 survey: improved drinking-water access "
-                + FormatUtil.formatPercentage(district.getNfhsImprovedWaterCoverage())
-                + ", improved sanitation "
-                + FormatUtil.formatPercentage(district.getNfhsImprovedSanitationCoverage())
-                + ". Risk uses NFHS-5 values for matched districts. Definitions differ, so these are comparisons, not identical measures.");
+        XYChart.Series<Number, String> series = new XYChart.Series<>();
+        series.getData().add(component("Water (45%)", waterContribution));
+        series.getData().add(component("Sanitation (35%)", sanitationContribution));
+        series.getData().add(component("Density (20%)", densityContribution));
+
+        contributionChart.getData().add(series);
     }
+
+    private XYChart.Data<Number, String> component(String label, double contribution) {
+        XYChart.Data<Number, String> data = new XYChart.Data<>(contribution, label);
+        Tooltip tip = new Tooltip(String.format(Locale.ROOT,
+                "%s weighted contribution: %.2f points", label, contribution));
+        data.nodeProperty().addListener((obs, oldN, newN) -> {
+            if (newN != null) Tooltip.install(newN, tip);
+        });
+        return data;
+    }
+
+    private double clamp(double value) {
+        if (!Double.isFinite(value)) {
+            return 0.0;
+        }
+        return Math.max(0.0, Math.min(1.0, value));
+    }
+
 
     private String generateInterpretationText(District d) {
         StringBuilder sb = new StringBuilder();
-        sb.append("District ").append(d.getName()).append(" presents an empirical waterborne disease risk score of ")
-          .append(FormatUtil.formatScore(d.getRiskScore())).append("/100, placing it in the ").append(d.getRiskLevel().getLabel()).append(" tier. ");
+        sb.append("District ").append(d.getName())
+          .append(" has a composite indicator score of ")
+          .append(FormatUtil.formatScore(d.getRiskScore()))
+          .append("/100, placing it in the ")
+          .append(d.getRiskLevel().getLabel())
+          .append(" tier under this model. ");
+
+        double waterDeficit = d.getWaterScarcity();
+        double sanitationCoverage = d.getSanitationCoverage();
+        double sanitationDeficit = 100.0 - sanitationCoverage;
 
         if (d.getRiskLevel() == RiskLevel.HIGH) {
-            sb.append("Primary risk drivers include acute water scarcity (").append(FormatUtil.formatPercentage(d.getWaterScarcity()))
-              .append(") and poor sanitation infrastructure (").append(FormatUtil.formatPercentage(d.getSanitationCoverage()))
-              .append(" coverage), compounded by high population density (").append(FormatUtil.formatDensity(d.getPopulationDensity()))
-              .append("). Immediate resource deployment for water purification and infrastructure intervention is strongly advised.");
+            sb.append("Primary risk drivers include a water-risk deficit of ")
+              .append(FormatUtil.formatPercentage(waterDeficit))
+              .append(" and a sanitation deficit of ")
+              .append(FormatUtil.formatPercentage(sanitationDeficit))
+              .append(", compounded by population density of ")
+              .append(FormatUtil.formatDensity(d.getPopulationDensity()))
+              .append(". These indicators support relative comparison and do not estimate disease cases.");
         } else if (d.getRiskLevel() == RiskLevel.MODERATE) {
-            sb.append("The district exhibits moderate environmental exposure. Water scarcity stands at ")
-              .append(FormatUtil.formatPercentage(d.getWaterScarcity())).append(" with sanitation coverage at ")
-              .append(FormatUtil.formatPercentage(d.getSanitationCoverage())).append(". Targeted sanitation upgrades and water conservation planning are recommended to prevent escalation to high risk.");
+            sb.append("The district shows moderate environmental exposure. Water-risk deficit is ")
+              .append(FormatUtil.formatPercentage(waterDeficit))
+              .append(" and sanitation coverage is ")
+              .append(FormatUtil.formatPercentage(sanitationCoverage))
+              .append(". The score is a comparative indicator, not a disease-incidence prediction.");
         } else {
-            sb.append("The district maintains favorable environmental public health indicators, with relatively low water scarcity (")
-              .append(FormatUtil.formatPercentage(d.getWaterScarcity())).append(") and robust sanitation coverage (")
-              .append(FormatUtil.formatPercentage(d.getSanitationCoverage())).append("). Routine monitoring is advised.");
+            sb.append("The district maintains comparatively favourable environmental indicators, with water-risk deficit at ")
+              .append(FormatUtil.formatPercentage(waterDeficit))
+              .append(" and sanitation coverage at ")
+              .append(FormatUtil.formatPercentage(sanitationCoverage))
+              .append(". The score is a comparative indicator, not a disease-incidence prediction.");
         }
-
         return sb.toString();
     }
 }
